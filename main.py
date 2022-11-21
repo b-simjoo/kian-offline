@@ -13,7 +13,7 @@ from os.path import exists
 from openpyxl import load_workbook
 
 STUDENTS_LIST_FILE = "students-list.xlsx"
-AP_SSID = 'BS.Attendence'
+AP_SSID = 'Kian Attendence app'
 AP_PASS = '12345678'
 
 def load_list_file():
