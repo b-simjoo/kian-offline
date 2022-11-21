@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="fa-ir" dir="rtl">
+    <head>
+        <link rel="stylesheet" href="assets/style.css">
+        <script type="text/javascript" src="assets/scripts.js"></script>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+    </head>
+    <body>
+        <div id="msg-container" class="msg-container"></div>
+        <div id="container" class="container">
+        {%if registered%}
+        <div id="content-1" class="content" animation="fade-left in">
+        {%else%}
+        <div id="content-1" class="content active" animation="fade-left out">
+        {%endif%}
+            <form name="reg_form" onsubmit="return register(event);">
+                <h1>ثبت شماره دانشجویی</h1>
+                <h5>این عمل برای هر دستگاه فقط یکبار لازم است</h5>
+                <hr>
+                <input type="number" name="std_num" placeholder="شماره دانشجویی">
+                <button type="submit"><i class="arrow right"></i></button>
+            </form>
+        </div>
+        {%if registered%}
+        <div id="content-2" class="content active" animation="fade-right out">
+        {%else%}
+        <div id="content-2" class="content" animation="fade-right in">
+        {%endif%}
+            <h1 id="hello-user" animation="fade in"></h1>
+            <svg id="loading" class="checkmark loading" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                <circle class="circle" cx="26" cy="26" r="25" fill="none"/>
+                <path class="check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+                <path class="error line1" fill="none" d="M14,14 L40,40"></path>
+                <path class="error line2" fill="none" d="M40,14 L14,40"></path>
+            </svg>
+            <table id="table" animation="fade in"></table>
+        </div>
+        </div>
+        {%if registered%}
+        <script type="text/javascript">attendence();</script>
+        {%endif%}
+    </body>
+</html>
