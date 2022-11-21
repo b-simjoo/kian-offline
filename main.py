@@ -1,6 +1,3 @@
-from __future__ import nested_scopes
-from email import message
-from xml.dom.domreg import registered
 from flask import Flask, request, session, render_template, redirect, jsonify
 from flask_session import Session
 from datetime import timedelta
