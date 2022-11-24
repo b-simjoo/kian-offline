@@ -1,4 +1,4 @@
-In the name of the rainbow god
+In the name of God of the rainbow
 # Kian
 First of all and before I describe my app I should say while I am developing this software, protests continue in Iran and innocent people and children are being injured or murdered by the government. The name Kian was chosen to commemorate the memory of Kian Pirfalak, the 9 years old child who was killed in Iran's protests.
 
