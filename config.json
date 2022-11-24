@@ -1,0 +1,9 @@
+{
+    "host":"0.0.0.0",
+    "port":"80",
+    "AP_SSID":"KIAN roll call app",
+    "passw": "12345678",
+    "database": "data.sqlite",
+    "admin username": "kian pirfalak",
+    "admin password": "admin"
+}
