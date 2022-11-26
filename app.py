@@ -27,35 +27,6 @@ config:dict = json.load(open('config.json','r'))
 Session(app)
 Mobility(app)
 
-db = SqliteDatabase(config['database'])
-
-class BaseModel(Model):
-    class meta:
-        database = db
-
-class Student(BaseModel):
-    name = CharField(unique=True)
-    number = CharField(unique=True)
-    
-    @property
-    def total_score(self):
-        return sum(map(lambda x:x.score,self.scores))  # type: ignore
-            
-
-class Device(BaseModel):  # type: ignore
-    mac = TextField(index=True,unique=True)
-    blocked = BooleanField(default=False)
-    student = ForeignKeyField(Student,null=True,backref='devices')
-    
-class Attendance(BaseModel):  # type: ignore
-    student = ForeignKeyField(Student,backref='attendances')
-    device = ForeignKeyField(Device,'login_history')
-    date_time = DateTimeField(default = datetime.now)
-    
-class Score(BaseModel):
-    student = ForeignKeyField(Student,backref="scores")
-    score = IntegerField()
-    date_time = DateTimeField(default = datetime.now)
 
 @app.before_first_request
 def initialize():
