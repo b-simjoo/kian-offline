@@ -3,7 +3,7 @@ In the name of God of the rainbow
 # Kian
 
 Kian is a simple Persian Windows app for teachers to easily roll call students. This app will create an Access-point and uses Flask as HTTP backend.
-Students should connect to the access point and enter server IP address in the browser, then for the first time they must submit their student number, application will save their MAC address and the student code for future. Teachers can use a Excel file which contains students cide and their name. This app will edit the file and add new columns for each session and write about students' presence.
+Students should connect to the access point and enter server IP address in the browser, then for the first time they must submit their student number, application will save their MAC address and the student code for future. Teachers can use a Excel file which contains students code and their name. This app will edit the file and add new columns for each session and write about students' presence.
 
 
 ## Who or What is Kian?
