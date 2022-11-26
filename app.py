@@ -1,20 +1,17 @@
-from flask import Flask, request, session, render_template, redirect, jsonify, g, url_for
+from flask import Flask, request, session, render_template, redirect, jsonify, g, url_for, abort
 from flask_session import Session
 from datetime import timedelta,datetime
 from flask_mobility import Mobility
-from os.path import exists
 from openpyxl import load_workbook
-from peewee import *
-from platform import system
+from model import db, Student, Device, Attendance, Score, Meeting
 from getmac import get_mac_address
 from playhouse.shortcuts import model_to_dict
-from urllib.parse import quote
+from tempfile import NamedTemporaryFile
 
 import json
-import subprocess
 
 DEBUG= True,
-SESSION_PERMENENT= True
+SESSION_PERMANENT= True
 SESSION_TYPE = 'filesystem',
 TRAP_HTTP_EXCEPTIONS= True
 PERMANENT_SESSION_LIFETIME= timedelta(hours=2)
@@ -31,7 +28,7 @@ Mobility(app)
 @app.before_first_request
 def initialize():
     db.connect()
-    db.create_tables([Student,Device,Attendance,Score])
+    db.create_tables([Student,Device,Attendance,Score,Meeting])
     
 
 @app.before_request
@@ -57,7 +54,7 @@ def _db_close(exc):
    if not db.is_closed():
       db.close()
 
-EASTER_EGG = " Hey, I'm so happy that you are reading this! good luck!"      # An easter-egg for my students!
+EASTER_EGG = " Hey, I'm so happy that you are reading this! good luck! BSimjoo ;-)"      # An easter-egg for my students!
 
 @app.route('/api/v1/register')
 def register_device():
@@ -111,7 +108,46 @@ def login():
     return render_template('login.html')
     
 def login_required(func):
-    if session.get('admin'):
-        return func()
-    else:
-        return redirect(url_for('login',redirect=request.full_path))
+    def wrapper(*args, **kwargs):
+        if session.get('admin'):
+            return func(*args,**kwargs)
+        else:
+            return redirect(url_for('login',redirect=request.full_path))
+    return wrapper
+        
+@app.route('/admin')
+@login_required
+def admin():
+    return render_template('admin')
+
+@app.route('/api/v1/students',method = ['POST'])
+@login_required
+def set_students():
+    if (file:=request.files.get('file')):
+        if file.filename:
+            if file.filename.rsplit('.',1)[1]=='xlsx':
+                with NamedTemporaryFile('r+b') as tmp:
+                    file.save(tmp)
+                    tmp.seek(0)
+                    wb = load_workbook(tmp.name)
+                    ws = wb.active
+                    for row in ws.iter_rows(max_col=2):
+                        std = Student.get_or_create(number = row[0].value, name = row[1].value)
+                        std.save()
+                    return redirect(url_for('admin'))
+            else:
+                return jsonify(error_code=7, info="bad file format")
+    abort(400)              
+
+@app.route('/api/v1/students')
+@login_required
+def get_students():
+    dates = list(Meeting.select().dicts())
+    students = []
+    for student in Student.select():
+        std = model_to_dict(student)
+        std['attendance'] = [False]*len(dates)
+        for attendance in student.attendances:
+            std['attendance'][attendance.meeting.id-1] = True
+        students.append(std)
+    return jsonify(dates = dates, students=students)
