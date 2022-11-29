@@ -1,11 +1,10 @@
 from flask import Flask, request, session, render_template, redirect, jsonify, g, url_for, abort
 from flask_session import Session
-from datetime import timedelta,datetime
+from datetime import timedelta
 from flask_mobility import Mobility
 from openpyxl import load_workbook
 from model import db, Student, Device, Attendance, Score, Meeting
 from getmac import get_mac_address
-from playhouse.shortcuts import model_to_dict
 from tempfile import NamedTemporaryFile
 
 import json
