@@ -75,16 +75,20 @@ def register_device():
     
 @app.route('/api/v1/attendance')
 def attendance():
-    if (student:=session.get('student')) is not None:
-        Attendance(student = student, device = session['device']).save()
-        res={
-            'name':student.name,
-            'number': student.number,
-            'attendances': [model_to_dict(a) for a in student.attendances]
-        }
-        return jsonify(res)
-    else:   # user has not registered yet
-        return jsonify(error_code=4,info="You must register first."+EASTER_EGG), 403
+    if (getattr(g,'meeting',None) is not None):
+        if (student:=session.get('student')) is not None:
+            Attendance(student = student, device = session['device'], meeting = g.meeting).save()
+            res={
+                'name':student.name,
+                'number': student.number,
+                'attendances': list(student.attendances.dicts()),
+                'meetings': list(Meeting.select().dicts())
+            }
+            return jsonify(res)
+        else:   # user has not registered yet
+            return jsonify(error_code=4,info="You must register first."+EASTER_EGG), 403
+    else:
+        return jsonify(error_code=8, info="session did not started yet."+EASTER_EGG), 404
     
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -112,7 +116,7 @@ def login_required(func):
         if session.get('admin'):
             return func(*args,**kwargs)
         else:
-            return redirect(url_for('login',redirect=request.full_path))
+            return redirect(url_for('login'))
     return wrapper
         
 @app.route('/admin')
@@ -139,15 +143,72 @@ def set_students():
                 return jsonify(error_code=7, info="bad file format")
     abort(400)              
 
-@app.route('/api/v1/students')
+@app.route('/api/v1/students/<int:number>')
 @login_required
-def get_students():
-    dates = list(Meeting.select().dicts())
-    students = []
-    for student in Student.select():
-        std = model_to_dict(student)
-        std['attendance'] = [False]*len(dates)
-        for attendance in student.attendances:
-            std['attendance'][attendance.meeting.id-1] = True
-        students.append(std)
-    return jsonify(dates = dates, students=students)
+def get_students(number=None):
+    if number is None:
+        students = []
+        for student in Student.select():
+            d = student.to_dict(
+                attendances = list(student.attendances.dicts()),
+                scores = list(student.scores.dicts()),
+                devices = list(student.devices.dicts())
+            )
+            students.append(d)
+        return jsonify(students)
+    if (student:=Student.get_or_none(Student.id==number)) is not None:   # type: ignore
+        return jsonify(student.to_dict(
+            attendances = [a.to_dict() for a in student.attendances],
+            scores = [s.to_dict() for s in student.scores],
+            devices = [d.to_dict() for d in student.devices]
+        ))  
+    abort(404)
+            
+@app.route('/api/v1/meetings/',method=['POST'])
+@login_required
+def set_meetings():
+    if getattr(g,'meeting',None) is None:
+        g.meeting = Meeting()
+        if g.meeting.save() == 1:
+            return jsonify(done=True)
+        else:
+            return jsonify(done=False, error_code=9, info="Unknown error while creating database record")
+    else:
+        return jsonify(done=True, error_code=10, info="meeting is already created")
+        
+            
+@app.route('/api/v1/meetings/<int:meeting_id>')
+@login_required
+def get_meetings(meeting_id:int|None=None):
+    if meeting_id is None:
+        return jsonify(list(Meeting.select().dicts()))
+    if (meet:=Meeting.get_or_none(Meeting.id==meeting_id)) is not None: #type: ignore
+        return jsonify(meet.to_dict(
+            attendances = [a.to_dict() for a in meet.attendances],
+            scores = [s.to_dict() for s in meet.scores]
+        ))
+    abort(404)
+            
+@app.route('/api/v1/attendance/<int:attendance_id>')
+@login_required
+def get_attendance(attendance_id=None):
+    if attendance_id is None:
+        return jsonify([a.to_dict() for a in Attendance.select()])
+    if (a:=Attendance.get_or_none(Attendance.id==attendance_id)) is not None:   #type: ignore
+        return jsonify(a.to_dict())
+    abort(404)
+    
+@app.route('/api/v1/device/<int:device_id>')
+@login_required
+def get_device(device_id=None):
+    if device_id is None:
+        return jsonify([
+            device.to_dict(
+                login_history = [l.to_dict for l in device.login_history]
+            )
+        ] for device in Device.select())
+    if (device:=Device.get_or_none(Device.id==device_id)) is not None:      # type: ignore
+        return jsonify(device.to_dict(
+            login_history = [l.to_dict for l in device.login_history]
+        ))
+    abort(404)
