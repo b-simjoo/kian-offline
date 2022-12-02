@@ -1,340 +1,112 @@
-html,
-body {
+@import "palette.css";
+
+html, body{
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    min-height: 100%;
+    background-color: var(--background);
+    color: var(--text);
+    font-size: 100%;
+    font-weight: 300;
+}
+
+*{
+    font-family: "Fira Code";
+    box-sizing: border-box;
+    font-feature-settings: "calt" 1;  /* Enable ligatures for IE 10+, Edge */
+    text-rendering: optimizeLegibility; /* Force ligatures for Webkit, Blink, Gecko */
+    word-break: break-all;
+}
+
+h1,h2,h3,h4,h5{
+    padding: 0;
+    margin-top: 1rem;
+    margin-bottom: .5rem;
+}
+
+h1{font-size: 2.5rem; font-weight: 700;}
+h2{font-size: 2.2rem; font-weight: 600;}
+h3{font-size: 2rem; font-weight: 600;}
+h4{font-size: 1.7rem; font-weight: 500;}
+h5{font-size: 1.2rem; font-weight: 500;}
+
+.container{
+    position:absolute;
+    width: 100%;
+    margin: 0;
+    transform: translateY(-50%);
+    top:50%;
+}
+
+.content{
+    margin: auto;
+    width: fit-content;
+    padding: 5px;
+}
+
+i{color:var(--icon)}
+button i{color:var(--text)}
+
+input,button{
+    border: solid var(--border) 2px;
+    background-color: var(--dark-bg);
+    color: var(--text);
+    padding-top: auto;
+    padding-bottom: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    height: 2rem;
+    font-size: 1rem;
+}
+
+input[type="text"]{
+    border-radius: 1rem 0 0 1rem;
+    width: 20rem;
+}
+button{
+    border-radius: 0 1rem 1rem 0;
+}
+
+span.pre-function{color: var(--pre-function);}
+span.pre-string{color:var(--pre-string)}
+
+.spinner::after{
+    content:"\EE06";
+    animation: spinner .5s forwards infinite;
+}
+
+@keyframes spinner {
+    0%{content:"\EE06"}
+    14%{content:"\EE07"}
+    28%{content:"\EE08"}
+    42%{content:"\EE09"}
+    57%{content:"\EE0A"}
+    85%{content:"\EE0B"}
+}
+
+.typing{
+    position: relative;
+}
+
+.typing::after{
+    position: absolute;
+    right:0;
+    top:0;
     width: 100%;
     height: 100%;
-    margin: 0;
-    background: linear-gradient(89.7deg, rgb(0, 0, 0) -10.7%, rgb(53, 92, 125) 88.8%);
+    content:'';
+    border-left: solid 2px white;
+    background-color: var(--background);
+    animation: typing 10s steps(41) 2s forwards infinite, blink .5s alternate-reverse infinite;
 }
 
-* {
-    padding: 5px;
-    box-sizing: border-box;
-    color: rgb(219, 219, 219)
+@keyframes typing {
+    50%{width: 0%;}
+    85%{width: 0%;}
+    100%{width: 100%;}
 }
 
-.msg-container {
-    width: 50%;
-    max-height: 30%;
-    margin: 0 auto;
-    overflow: hidden;
-}
-
-.msg {
-    border-radius: 10px;
-    padding: 5px 10px;
-    margin: 5px;
-}
-
-.msg.error {
-    border: 1px solid hsl(0, 100%, 50%);
-    background-color: hsl(0, 100%, 15%);
-}
-
-.msg.success {
-    border: 1px solid hsl(120, 100%, 50%);
-    background-color: hsl(118, 100%, 15%);
-}
-
-.container {
-    width: 50%;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    -ms-transform: translate(-50%, -50%);
-    transform: translate(-50%, -50%);
-    border: 2px solid rgb(95, 95, 95);
-    border-radius: 20px;
-    background: linear-gradient(135deg, #802a0b, #471121, #220006);
-    text-align: center;
-    transition: height .8s ease-in-out;
-}
-
-.content {
-    position: absolute;
-    width: 100%;
-}
-
-.fade-in {
-    animation: fade 1s ease-in-out reverse backwards;
-}
-
-.fade-out {
-    animation: fade 1s ease-in-out forwards;
-}
-
-@keyframes fade {
-    0% {
-        opacity: 100%;
-    }
-
-    100% {
-        opacity: 0%;
-    }
-}
-
-.fade-left-out {
-    top: 0;
-    left: 50%;
-    width: 100%;
-    animation: fade-left .5s ease-in-out;
-}
-
-@keyframes fade-left {
-    0% {
-        opacity: 100%;
-        left: 0%
-    }
-
-    100% {
-        opacity: 0%;
-        left: -50%
-    }
-}
-
-.fade-right-in {
-    top: 0;
-    right: 0;
-    width: 100%;
-    animation: fade-right .5s ease-in-out reverse;
-}
-
-@keyframes fade-right {
-    0% {
-        opacity: 100%;
-        right: 0%
-    }
-
-    100% {
-        opacity: 0%;
-        right: -50%
-    }
-}
-
-h1,
-h2,
-h3,
-h4,
-h5 {
-    padding-top: 0;
-    margin-top: 0;
-    margin-bottom: 5px;
-}
-
-hr {
-    padding: 0;
-    margin: 2px;
-    border-color: rgb(161, 161, 161);
-}
-
-table {
-    overflow-x: auto;
-    margin: 5px auto;
-    border-collapse: collapse;
-    text-align: center;
-    width: fit-content;
-    background-color: rgba(22, 22, 22,.5);
-}
-
-td {
-    border: 1px solid rgb(168, 168, 168);
-}
-
-
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-}
-
-/* Firefox */
-input[type=number] {
-    -moz-appearance: textfield;
-    border-radius: 20px 0 0 20px;
-}
-
-input,
-button {
-    margin: 10px 0;
-    padding: 10px 20px;
-    border-radius: 0 20px 20px 0;
-    background-color: rgb(22, 22, 22);
-}
-
-button {
-
-    border-radius: 0 20px 20px 0;
-}
-
-.arrow {
-    border: solid white;
-    border-width: 0 3px 3px 0;
-    display: inline-block;
-    padding: 4px;
-}
-
-.right {
-    transform: rotate(-45deg);
-    -webkit-transform: rotate(-45deg);
-}
-
-form {
-    direction: ltr;
-}
-
-.circle {
-    stroke-dasharray: 166;
-    stroke-width: 7;
-    stroke-miterlimit: 10;
-    transform-origin: 50% 50%;
-    stroke: #7ac142;
-    fill: none;
-    animation: loading 2s linear infinite;
-}
-
-.checkmark {
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    display: block;
-    stroke-width: 2;
-    stroke: #fff;
-    stroke-miterlimit: 10;
-    margin: 0 auto;
-    box-shadow: inset 0px 0px 0px #7ac142;
-}
-
-.done {
-    animation: done-fill .5s ease-in-out .8s forwards,
-        scale .3s ease-in-out 1.2s both;
-}
-
-@keyframes done-fill {
-    100% {
-        box-shadow: inset 0px 0px 0px 30px #7ac142;
-    }
-}
-
-.done .circle {
-    animation-name: loading, loading-done;
-    animation-iteration-count: 1;
-    animation-duration: 1s;
-}
-
-.failed .circle {
-    stroke: #c14242;
-    animation-name: loading, failed-color, loading-done;
-    animation-iteration-count: 1;
-    animation-duration: 1s;
-}
-
-@keyframes loading {
-    0% {
-        stroke-dashoffset: 40;
-        transform: rotate(0deg);
-    }
-
-    50% {
-        stroke-dashoffset: 140;
-        transform: rotate(480deg);
-    }
-
-    100% {
-        stroke-dashoffset: 40;
-        transform: rotate(720deg);
-    }
-}
-
-@keyframes loading-done {
-    0% {
-        stroke-dashoffset: 40;
-        transform: rotate(0deg);
-    }
-
-    100% {
-        stroke-dashoffset: 0;
-        transform: rotate(720deg);
-    }
-}
-
-@keyframes failed-color {
-    0%{stroke: #7ac142;}
-    100%{stroke: #c14242;}
-}
-
-.failed {
-    animation: failed-fill .5s ease-in-out .8s forwards,
-        scale .3s ease-in-out 1.2s both;
-}
-
-@keyframes failed-fill {
-    100% {
-        box-shadow: inset 0px 0px 0px 30px #c14242;
-    }
-}
-
-.loading .check,
-.loading .error,
-.failed .check,
-.done .error {
-    display: none;
-}
-
-.done .check {
-    transform-origin: 50% 50%;
-    stroke-dasharray: 48;
-    stroke-dashoffset: 48;
-    stroke-width: 5;
-    animation: check 0.5s cubic-bezier(0.65, 0, 0.45, 1) 1.5s forwards;
-}
-
-.failed .error{
-    display: block;
-    stroke: white;
-    stroke-width: 5;
-    
-    stroke-dasharray: 54px 55px;
-    stroke-dashoffset: 55px;
-    stroke-linecap: round;
-}
-
-.failed .error.line1 {
-    animation: error-line 0.15s 1.2s linear both;
-}
-
-.failed .error.line2 {
-    animation: error-line 0.2s 0.9s linear both;
-}
-
-@keyframes error-line {
-    to {
-        stroke-dashoffset: 0;
-    }
-}
-
-@keyframes check {
-    100% {
-        stroke-dashoffset: 0;
-    }
-}
-
-@keyframes scale {
-
-    0%,
-    100% {
-        transform: none;
-    }
-
-    50% {
-        transform: scale3d(1.1, 1.1, 1);
-    }
-}
-
-@media only screen and (max-width: 650px) {
-    .container {
-        width: 80%;
-    }
-
-    .msg-container {
-        width: 100%;
-    }
+@keyframes blink {
+    to{border-color: transparent;}
 }
