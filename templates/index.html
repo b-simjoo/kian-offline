@@ -8,19 +8,20 @@
 	<link rel="stylesheet" href="assets/palette.css">
 	<link rel="stylesheet" href="assets/Fira_Code_v6.2/fira_code.css">
 	<link rel="stylesheet" href="assets/style.css">
+	<script type="text/javascript" src="assets/animations.js"></script>
 	<script type="text/javascript" src="assets/script.js"></script>
 </head>
 
 <body>
-	<div class="container">
+	<div id="container" class="container">
 		<div id="student-code" class="content">
 			<h4><i class="fa-solid fa-user"></i> Student code:</h4>
-			<input id="student-code" type="text"><button name="submit"><i class="fa-solid fa-caret-right"></i></button>
+			<input id="student-code" type="number" placeholder="Enter your student number" onkeypress="validate(event)"><button name="submit"><i class="fa-solid fa-caret-right"></i></button>
 		</div>
-		<div id="loading" class="content deactive">
-			<h5><span class="spinner"></span> <span class="typing"><span class="pre-function">print</span>(<span class="pre-string">"Hello, Registering your presence"</span>)</span></h5>
+		<div id="loading" class="content hidden">
+			<h5><span class="spinner"></span> <kbd id="loading-text"><span class="pre-function">print</span>(<span class="pre-string">"Hello, Registering your presence"</span>)</kbd></h5>
 		</div>
-		<div id="student-info" class="content deactive"></div>
+		<div id="student-info" class="content hidden"></div>
 	</div>
 </body>
 

@@ -1,0 +1,61 @@
+:root{
+    --text-len: 41;
+}
+
+.hidden{display: none;}
+
+.typing-in::after{
+    animation: typing calc(.2s * var(--text-len)) steps(var(--text-len)) 1s forwards, blink .5s alternate-reverse infinite;
+    width: 100%;
+}
+
+.typing-out::after{
+    animation: clear-text calc(.1s * var(--text-len)) steps(var(--text-len)) forwards, blink .5s alternate-reverse infinite;
+    width: 0%;
+}
+
+@keyframes typing {
+    0%{width: 100%;}
+    50%{width: 0%;}
+    100%{width: 0%;}
+}
+
+@keyframes clear-text {
+    from{width: 0%;}
+    to{width: 100%;}
+}
+
+@keyframes blink {
+    to{border-color: transparent;}
+}
+
+@keyframes spinner {
+    0%{content:"\EE06"}
+    14%{content:"\EE07"}
+    28%{content:"\EE08"}
+    42%{content:"\EE09"}
+    57%{content:"\EE0A"}
+    85%{content:"\EE0B"}
+}
+
+@keyframes fade {
+    from{opacity: 1;}
+    to{opacity: 0;}
+}
+
+@keyframes left {
+    from {transform: translateX(-100%);}
+    to{transform: translateX(0);}
+}
+
+@keyframes right {
+    from {transform: translateX(100%);}
+    to{transform: translateX(0);}
+}
+
+.fade-in{animation: fade 1s reverse forwards ease-in-out;}
+.fade-out{animation: fade 1s forwards ease-in-out;}
+.fade-left-in{animation: fade 1s reverse forwards ease-in-out, left 1s forwards ease-in-out;}
+.fade-left-out{animation: fade 1s forwards ease-in-out, left 1s reverse forwards ease-in-out;}
+.fade-right-in{animation: fade 1s reverse forwards ease-in-out, right 1s forwards ease-in-out;}
+.fade-right-out{animation: fade 1s forwards ease-in-out, right 1s reverse forwards ease-in-out;}
