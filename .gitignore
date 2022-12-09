@@ -133,3 +133,4 @@ dmypy.json
 .vscode/
 flask_session/
 *.sqlite
+.meeting
