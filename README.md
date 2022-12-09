@@ -1,10 +1,13 @@
 In the name of God of the rainbow
 
+> **Warning**
+> This repository is under development. The `main` branch contains first alpha version and may be unstable. Developing v1 at [`develop-v1`](https://github.com/bsimjoo-official/kian/tree/develop-v1) branch.
 # Kian
+[![](https://img.shields.io/github/v/release/bsimjoo-official/kian?include_prereleases&label=latest%20pre-release)](https://github.com/bsimjoo-official/kian/releases)
+[![](https://img.shields.io/badge/dev--branch-develop--v1-blue)](https://github.com/bsimjoo-official/kian/tree/develop-v1)
 
 Kian is a simple Persian Windows app for teachers to easily roll call students. This app will create an Access-point and uses Flask as HTTP backend.
 Students should connect to the access point and enter server IP address in the browser, then for the first time they must submit their student number, application will save their MAC address and the student code for future. Teachers can use a Excel file which contains students code and their name. This app will edit the file and add new columns for each session and write about students' presence.
-
 
 ## Who or What is Kian?
 
