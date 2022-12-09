@@ -3,44 +3,38 @@ function slide(slide) {
   container = document.getElementById('container')
   slides = container.children
   if (curtain_slide<slide){
-    animate(slides[curtain_slide], 'fade-left', 'out');
-    animate(slides[slide], 'fade', 'in', 2000);
+    return animate(slides[curtain_slide], 'fade-left', 'out')
+    .then(()=>animate(slides[slide], 'fade', 'in'))
+    .then(()=>{curtain_slide = slide});
   }else{
-    animate(slides[curtain_slide], 'fade', 'out');
-    animate(slides[slide], 'fade-left', 'in', 2000);
+    return animate(slides[curtain_slide], 'fade', 'out')
+    .then(()=>animate(slides[slide], 'fade-left', 'in'))
+    .then(()=>{curtain_slide = slide});
   }
-  curtain_slide = slide;
 }
 
-function request(action, params = {}, callback, failed) {
+function request(action, params = {}, method = 'GET', callback = null, error_handlers = {}) {
   url = '/api/v1/' + action + '?' + (new URLSearchParams(params)).toString();
-  fetch(url, { method: 'GET', redirect: 'follow', })
-    .then((res) => {
-      if (res.ok)
-        return res.json();
-      throw new Error('Unknown error, please try again.');
-    }).then((res) => {
-      if (!res.done) {
-        if (res.redirect)
-          setTimeout(function () { window.location = res.redirect; }, 10000);
-        throw new Error(emessages[res.error]);
-      }
-      return res
-    }).then((res) => {
-      if (callback)
-        callback(res);
-    }).catch((error) => {
-      if (failed)
-        failed(error);
-    })
+  fetch(url, { method: method, redirect: 'follow', })
+    .then((res)=>{
+      if (res.status===200)
+        return res.json().then(callback);
+      return res.json().then(error_handlers[res.status]);})
+}
+
+function show_msg(message_type, text){
+  var msg_elem = document.createElement("div");
+  msg_elem.innerHTML=text;
+  msg_elem.classList.add('msg', message_type);
+  hide(msg_elem);
+  container = document.getElementById('msg-container');
+  container.insertBefore(msg_elem,container.firstChild);
+  animate(msg_elem,'fade-down','in')
+  animate(msg_elem,'fade-left','out',10000);
 }
 
 function validate(event) {
   if ((event.key.length === 1 && /\D/.test(event.key)) || event.currentTarget.textLength>10) {
     event.preventDefault();
   }
-}
-
-function register() {
-
 }
