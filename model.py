@@ -1,7 +1,7 @@
 from json import load
 from peewee import SqliteDatabase, Model, TextField, FixedCharField, BooleanField, ForeignKeyField, DateTimeField, IntegerField, DateField, TimeField
 from datetime import datetime
-from playhouse.shortcuts import model_to_dict
+from playhouse.shortcuts import model_to_dict, dict_to_model
 
 config:dict = load(open('config.json','r'))
 
@@ -11,9 +11,26 @@ class BaseModel(Model):
     class Meta:
         database = db
         
-    def to_dict(self,**kwargs)->dict:
-        res = model_to_dict(self)
-        res.update(**kwargs)
+    def to_dict(self, recurse=True, backrefs=True, only=None,
+                  exclude=..., extra_attrs=None, max_depth=None,update={})->dict[str,object]:
+        """
+        Convert a model instance (and any related objects) to a dictionary.
+
+        :param bool recurse: Whether foreign-keys should be recursed.
+        :param bool backrefs: Whether lists of related objects should be recursed.
+        :param only: A list (or set) of field instances indicating which fields
+            should be included.
+        :param exclude: A list (or set) of field instances that should be
+            excluded from the dictionary.
+        :param list extra_attrs: Names of model instance attributes or methods
+            that should be included.
+        :param int max_depth: Maximum depth to recurse, value <= 0 means no max.
+        """
+        if exclude is Ellipsis:
+            exclude = [Meeting.scores]   # type: ignore
+        res = model_to_dict(self,recurse=recurse, backrefs=backrefs, only=only,
+                            exclude=exclude, extra_attrs=extra_attrs, max_depth=max_depth)
+        res.update(**update)
         return res
         
 class Meeting(BaseModel):   # Chosen meeting name because to prevent collide with flask session
@@ -21,6 +38,8 @@ class Meeting(BaseModel):   # Chosen meeting name because to prevent collide wit
     # attendances
     # scores
     
+    def to_dict(self, recurse=True, backrefs=True, only=None, exclude=None, extra_attrs=None, max_depth=None, update={}) -> dict[str, object]:
+        return super().to_dict(recurse, backrefs, only, exclude, extra_attrs, max_depth, update)
 
 class Student(BaseModel):
     name = TextField(unique=True)
@@ -33,14 +52,16 @@ class Student(BaseModel):
     def total_score(self):
         return sum(map(lambda x:x.score,self.scores))           # type: ignore
     
-    def to_dict(self, **kwargs) -> dict:
-        return super().to_dict(total_score = self.total_score, **kwargs)
+    def to_dict(self, recurse=True, backrefs=True, only=None, exclude=None, extra_attrs=None, max_depth=None, update={}) -> dict[str, object]:
+        update['total_score'] = self.total_score
+        return super().to_dict(recurse, backrefs, only, exclude, extra_attrs, max_depth, update)
     
 
 class Device(BaseModel):  # type: ignore
-    mac = TextField(index=True,unique=True)
+    mac = TextField(unique=True)
     blocked = BooleanField(default=False)
     student = ForeignKeyField(Student,null=True,backref='devices')
+    registration_time = DateTimeField(default=datetime.now)
     # login_history
     
 class Attendance(BaseModel):  # type: ignore
