@@ -35,6 +35,7 @@ class BaseModel(Model):
         
 class Meeting(BaseModel):   # Chosen meeting name because to prevent collide with flask session
     date = DateField(default = lambda:datetime.now().date())
+    in_progress = BooleanField(default=True)
     # attendances
     # scores
     
