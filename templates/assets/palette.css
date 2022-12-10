@@ -5,9 +5,13 @@
     --icon: #f6005e;
     --dark-bg: #171717;
     --light-bg: #424242;
-    --pre-function: #f8518d;
-    --pre-string:#ffc400;
     --absent:#ff735b;
     --present:#69ff5b;
     --table:#ffeed0;
+
+    /*----[ syntax highlight colors ]----*/
+    --pre-function: #f8518d;
+    --pre-string:#ffc400;
+    --pre-keyword: #00aeff;
+    --pre-class:#229200;
 }

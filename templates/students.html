@@ -17,13 +17,13 @@
     </div>
     <div id="wait-slide" class="content hidden">
         <h5><span class="spinner"></span> <kbd id="loading-text"></kbd></h5>
-        <button id="retry" class="hidden" onclick="attendance()"><i class="fa-solid fa-rotate-right"></i></button>
+        <button id="retry" class="hidden" onclick="attendance(true)"><i class="fa-solid fa-rotate-right"></i></button>
     </div>
     <div class="content hidden">
         <h2 style="text-align:center">Your profile</h2>
         <div class="box" id="student-info">
             <div style="margin:10px">
-                <i class="fa-solid fa-user big-icon" style="font-size: 5rem;"></i>
+                <i class="fa-solid fa-user large-icon"></i>
                 <div style="display:inline-block">
                     <h3 style="margin-bottom:0; text-align:left" id="student-name">Student Name</h3>
                     <small><span id="student-number">0123456789</span>  |  Total score: <span id="total-score" style="color:var(--icon)">0</span></small>
@@ -32,6 +32,7 @@
             <h4 style="text-align:center">Attendances and scores:</h4>
             <div id="student-attendance"></div>
         </div>
+        <small>if you are teacher click <a href="{{url_for('admin')}}">here</a></small>
     </div>
 </div>
 {% endblock %}

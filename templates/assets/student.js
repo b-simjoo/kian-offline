@@ -5,22 +5,21 @@ function register (){
         show_msg('success', 'Your device registered.')
         console.log(res);
         slide(1)
-        .then(()=>kbd_type('loading-text','<span class="pre-function">print</span>(<span class="pre-string">"Hello, '+res.student_name+'"</span>)'))
-        .then(()=>sleep(3000))
-        .then(()=>kbd_type('loading-text','<span class="pre-function">attendance</span>(<span class="pre-string">"'+std_num.toString()+'"</span>)'))
+        .then(()=>type_text('<span class="pre-function">print</span>(<span class="pre-string">"Hello, '+res.student_name+'"</span>)'))
         .then(()=>sleep(3000))
         .then(()=>attendance());
     },
     {
         404:(res)=>{
             shake('student-code-group');
+            type_text(pre('keyword','raise ')+pre('class','AssertionError')+'('+pre('string','"404 ERROR"')+')')
             show_msg('error','Error: Student does not exist, check the student number');
         },
         403:(res)=>{
             show_msg('warning', 'Your device is already registered');
             console.log(res);
             slide(1)
-            .then(()=>kbd_type('loading-text','<span class="pre-function">print</span>(<span class="pre-string">"Hello, '+res.student_name+'"</span>)'))
+            .then(()=>type_text(pre('function','print')+'('+pre('string',`"Hello, ${res.student_name}"`)+')'))
             .then(()=>sleep(3000))
             .then(()=>attendance());
         }
@@ -28,38 +27,42 @@ function register (){
     )
 }
 
-function attendance(){
-    kbd_type('loading-text','<span class="pre-function">attendance</span>(<span class="pre-string">"'+std_num.toString()+'"</span>)')
+function attendance(retry=false){
+    if (retry)
+        animate('retry', 'fade', 'out');
+    type_text(pre('function','attendance')+'('+pre('string','"'+std_num.toString()+'"')+')')
     .then(()=>sleep(3000))
     .then(()=>{
         request('attendance',undefined,undefined,
         (res)=>{
-            kbd_type('loading-text', '<span class="pre-function">print</span>(<span class="pre-string">"Done"</span>)')
+            type_text(pre('function','print')+'('+pre('string','"done"')+')')
             .then(()=>{
                 show_msg('success','Done')
                 render_student_info(res);
             })
-            .then(()=>kbd_type('loading-text','<span class="pre-function">next</span>()'))
+            .then(()=>type_text(pre('function','next')+'()'))
             .then(()=>sleep(1000))
             .then(()=>slide(2));
         },{
             403:(res)=>{
                 show_msg('error','Your device is not registered. enter your student number to continue');
-                slide(0);
+                type_text(pre('keyword','raise ')+pre('class','AssertionError')+'('+pre('string','"403 ERROR"')+')')
+                .then(()=>sleep(1000))
+                .then(slide(0));
             },
             404:(res)=>{
-                show_msg('error','session did not start, try again after teacher start new session');
-                kbd_type('loading-text','<span class="pre-function">show_btn</span>(<span class="pre-string">"try agian"</span>)')
+                show_msg('error','session did not start, try again after teacher start new session',20000);
+                type_text(pre('keyword','raise ')+pre('class','AssertionError')+'('+pre('string','"404 ERROR"')+')')
                 .then(()=>animate('retry','fade', 'in'))
-                .then(()=>{show_msg('info','click on <i class="fa-solid fa-rotate-right"></i> after session started')})
+                .then(()=>{show_msg('info','click on <i class="fa-solid fa-rotate-right"></i> after session started',30000)})
             },
             203:(res)=>{
-                kbd_type('loading-text', '<span class="pre-function">print</span>(<span class="pre-string">"Done"</span>)')
+                type_text(pre('function','print')+'('+pre('string','"done"')+')')
                 .then(()=>{
                     show_msg('success','Done')
                     render_student_info(res);
                 })
-                .then(()=>kbd_type('loading-text','<span class="pre-function">next</span>()'))
+                .then(()=>type_text(pre('function','next')+'()'))
                 .then(()=>sleep(1000))
                 .then(()=>slide(2));
             }

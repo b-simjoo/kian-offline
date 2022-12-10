@@ -65,7 +65,7 @@ p{margin:5px;}
     margin:2px;
     border: 2px solid;
     padding: 5px;
-    border-radius: 5px;
+    border-radius: .5rem;
     color: white;
     font-size: .8rem;
     font-weight: 600;
@@ -123,7 +123,9 @@ i{color:var(--icon)}
 button i{color:var(--text)}
 i.absent{color:var(--absent)}
 i.present{color: var(--present);}
-i.big-icon{font-size: 5rem;}
+i.large-icon{font-size: 5rem;}
+i.xlarge-icon{font-size: 7rem;}
+i.xxlarge-icon{font-size: 10rem;}
 
 input,button{
     display: block;
@@ -207,8 +209,10 @@ input:focus{
     background-color: var(--light-bg);
 }
 
-span.pre-function{color: var(--pre-function);}
+span.pre-function{color: var(--pre-function)}
 span.pre-string{color:var(--pre-string)}
+span.pre-keyword{color:var(--pre-keyword)}
+span.pre-class{color:var(--pre-class)}
 span.note{color:#00b7ff}
 span.note::before{
     font-family: var(--fa-style-family,"Font Awesome 6 Free");

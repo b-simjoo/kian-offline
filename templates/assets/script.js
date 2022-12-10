@@ -22,7 +22,7 @@ function request(action, params = {}, method = 'GET', callback = null, error_han
       return res.json().then(error_handlers[res.status]);})
 }
 
-function show_msg(message_type, text){
+function show_msg(message_type, text, duration=10000){
   var msg_elem = document.createElement("div");
   msg_elem.innerHTML=text;
   msg_elem.classList.add('msg', message_type);
@@ -30,7 +30,7 @@ function show_msg(message_type, text){
   container = document.getElementById('msg-container');
   container.insertBefore(msg_elem,container.firstChild);
   animate(msg_elem,'fade-down','in')
-  animate(msg_elem,'fade-left','out',10000);
+  animate(msg_elem,'fade-left','out',duration);
 }
 
 function validate(event) {
@@ -38,3 +38,7 @@ function validate(event) {
     event.preventDefault();
   }
 }
+
+function type_text(html){ return kbd_type('loading-text', html) }
+
+function pre(style,content){return `<span class="pre-${style}">${content}</span>`}
