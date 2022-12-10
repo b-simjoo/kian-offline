@@ -7,9 +7,6 @@ from openpyxl import load_workbook
 from model import db, Student, Device, Attendance, Score, Meeting
 from getmac import get_mac_address
 from tempfile import NamedTemporaryFile
-from os.path import exists
-from os import remove
-from datetime import date
 
 import json
 import functools
@@ -32,15 +29,10 @@ config:dict = json.load(open('config.json','r'))
 def initialize():
     db.connect()
     db.create_tables([Student,Device,Attendance,Score,Meeting])
-    if exists('.meeting'):
-        try:
-            meet_id = int(open('.meeting').read())
-            if (meet:=Meeting.get_or_none(Meeting.id==meet_id)) is not None:  # type: ignore
-                if meet.date == date.today():
-                    return
-        except:
-            pass
-        remove('.meeting')
+    
+    if (meeting:=Meeting.get_or_none(Meeting.in_progress==True)) is not None:
+        meeting.in_progress = False
+        meeting.save()
 
 @app.before_request
 def _before_request():
@@ -50,9 +42,8 @@ def _before_request():
     if not g.db.is_connection_usable():
         g.db.connect()
         
-    if exists('.meeting'):
-        meet_id = int(open('.meeting').read())
-        g.meeting = Meeting.get_by_id(meet_id)
+    if not 'meeting' in g:
+        g.meeting = Meeting.get_or_none(Meeting.in_progress==True)
     
     if session.get('mac') is None:
         if request.remote_addr in ('localhost', '127.0.0.1'):
@@ -76,7 +67,7 @@ def _db_close(exc):
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('students.html')
 
 EASTER_EGG = " EASTER EGG: I'm so happy that you are reading this! good luck and hack the planet! BSimjoo ;-)"      # An easter-egg for my students!
 
@@ -129,39 +120,52 @@ def attendance():
     else:
         return jsonify( info="session did not started yet."+EASTER_EGG), 404
     
-@app.route('/login', methods=['GET', 'POST'])
+@app.route('/admin')
+def admin():
+    if config.get('admin from localhost',True):
+        if request.remote_addr not in ['localhost','127.0.0.1']:
+            return redirect('/')
+    return render_template('admin.html',admin=session.get('admin',False))
+    
+@app.route('/login', methods=['POST'])
 def login():
-    if session.get('admin') and not app.debug:
-        return redirect(url_for('admin'))
-    if request.method == 'POST':
-        if (not session.get('banned')):
-            username = request.form.get('username',type=str)
-            password = request.form.get('password',type=str)
-            if username and password:
-                if (config['admin username'],config['admin password']) == (username, password):
-                    session['admin'] = True
-                    return redirect(url_for('admin'))
-            session['failed tries'] = session.get('failed tries',0) + 1
-            if session['failed tries'] == 5:
-                session['banned'] = True
-                return jsonify( banned=True, info="login failed, you got banned."+EASTER_EGG), 401
-            return jsonify( banned=False, failed_tries=session['failed tries'], info="login failed."+EASTER_EGG), 401
-        else:
-            return jsonify( info="you are banned."+EASTER_EGG), 403
-    return render_template('login.html')
+    if config.get('admin from localhost',True):
+        if request.remote_addr not in ['localhost','127.0.0.1']:
+            return redirect('/')
+    if session.get('admin') and not app.debug:      # TODO: remove `app.debug`
+        return jsonify(logged_in=True)
+    if (not session.get('banned')):
+        username = request.form.get('username',type=str)
+        password = request.form.get('password',type=str)
+        if username and password:
+            if (config['admin username'],config['admin password']) == (username, password):
+                session['admin'] = True
+                return jsonify(logged_in=True)
+        session['failed tries'] = session.get('failed tries',0) + 1
+        if session['failed tries'] == 5:
+            session['banned'] = True
+            return jsonify( banned=True, info="login failed, you got banned."+EASTER_EGG), 401
+        return jsonify( banned=False, failed_tries=session['failed tries'], info="login failed."+EASTER_EGG), 401
+    else:
+        return jsonify( info="you are banned."+EASTER_EGG), 403
+    
+@app.route('/api/v1/can_login')
+def can_login():
+    if config.get('admin from localhost',True):
+        if request.remote_addr not in ['localhost','127.0.0.1']:
+            return jsonify(can_login=False, banned = session.get('banned',False))
+    return jsonify(can_login=True, banned = session.get('banned',False))
     
 def login_required(func):
     @functools.wraps(func)
     def wrapper(*args, **kw):
+        if config.get('admin from localhost',True):
+            if request.remote_addr not in ['localhost','127.0.0.1']:
+                return redirect('/')
         if app.debug or session.get('admin'):
             return func(*args,**kw)
         return redirect(url_for('login'))
     return wrapper
-        
-@app.route('/admin')
-@login_required
-def admin():
-    return render_template('admin')
 
 @app.route('/api/v1/students',methods = ['POST'])
 @login_required
@@ -193,7 +197,7 @@ def get_student(number):
         if (student:=Student.get_or_none(Student.id==number)) is not None:   # type: ignore
             return jsonify(student.to_dict())       # type: ignore
         abort(404)
-    abort(401)
+    return jsonify(info="You're not authorized, get your info or login as admin!"+EASTER_EGG), 401
       
 @app.route('/api/v1/attendances')
 @login_required
@@ -206,7 +210,7 @@ def get_attendance(attendance_id):
         if (a:=Attendance.get_or_none(Attendance.id==attendance_id)) is not None:   #type: ignore
             return jsonify(a.to_dict())
         abort(404)
-    abort(401)
+    return jsonify(info="You're not authorized, get your attendance info or login as admin!"+EASTER_EGG), 401
     
 @app.route('/api/v1/devices')
 @login_required
@@ -219,27 +223,44 @@ def get_device(device_id):
         if (device:=Device.get_or_none(Device.id==device_id)) is not None:      # type: ignore
             return jsonify(device.to_dict(backrefs=True))
         abort(404)
-    abort(401)
+    return jsonify(info="You're not authorized, get your device or login as admin!"+EASTER_EGG), 401
     
-@app.route('/api/v1/meetings')
+@app.route('/api/v1/current_meeting')
 @login_required
-def set_meetings():
-    if 'meeting' not in g:
+def get_current_meeting():
+    if 'meeting' in g and g.meeting.in_progress:
+        return jsonify(g.meeting.to_dict())
+    return jsonify(info="no in progress meeting"), 404
+    
+@app.route('/api/v1/current_meeting',methods=['POST'])
+@login_required
+def start_meeting():
+    if 'meeting' not in g or g.meeting.in_progress == False:
         g.meeting = Meeting()
         if g.meeting.save() == 1:
-            open('.meeting','w').write(str(g.meeting.id))    # type: ignore
             return jsonify(g.meeting.to_dict())
         else:
             return jsonify(done=False,  info="Unknown error while creating database record"), 500
     else:
-        return jsonify(done=True,  info="meeting is already created"), 202
-        
+        return jsonify(info="a meeting is already in progress"), 202
+    
+@app.route('/api/v1/current_meeting', methods=['DEL'])
+@login_required
+def end_current_meeting():
+    if 'meeting' in g and g.meeting.in_progress:
+        g.meeting.in_progress=False
+        g.meeting.save()
+        return jsonify(g.meeting)
+    return jsonify(info="no in progress meeting"), 404
             
+@app.route('/api/v1/meetings')
+@login_required
+def get_meetings():
+    return jsonify(list(Meeting.select().dicts()))
+
 @app.route('/api/v1/meetings/<int:meeting_id>')
 @login_required
-def get_meetings(meeting_id:int|None=None):
-    if meeting_id is None:
-        return jsonify(list(Meeting.select().dicts()))
+def get_meeting(meeting_id:int)
     if (meet:=Meeting.get_or_none(Meeting.id==meeting_id)) is not None: #type: ignore
         return jsonify(meet.to_dict(backrefs=True))
     abort(404)
@@ -249,6 +270,8 @@ app.route('api/v1/meetings/<int:meeting_id>',methods=['DEL'])
 def del_meetings(meeting_id:int):
     if (meet:=Meeting.get_or_none(Meeting.id==meeting_id)) is not None: #type: ignore
         if (rows:=meet.delete_instance(True)) >0:
+            if (meet==g.meeting):
+                g.meeting = None
             return jsonify(rows=rows)
-        return jsonify(info="didn't deleted any row")
+        return jsonify(info="didn't deleted any row"), 500
     abort(404)
