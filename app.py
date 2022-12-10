@@ -260,7 +260,7 @@ def get_meetings():
 
 @app.route('/api/v1/meetings/<int:meeting_id>')
 @login_required
-def get_meeting(meeting_id:int)
+def get_meeting(meeting_id:int):
     if (meet:=Meeting.get_or_none(Meeting.id==meeting_id)) is not None: #type: ignore
         return jsonify(meet.to_dict(backrefs=True))
     abort(404)
