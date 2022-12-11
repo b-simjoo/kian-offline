@@ -1,13 +1,32 @@
+<div align="center">
 In the name of God of the rainbow
 
 > **Warning**
 > This repository is under development. The `main` branch contains first alpha version and may be unstable. Developing v1 at [`develop-v1`](https://github.com/bsimjoo-official/kian/tree/develop-v1) branch.
+
 # Kian
 [![](https://img.shields.io/github/v/release/bsimjoo-official/kian?include_prereleases&label=latest%20pre-release)](https://github.com/bsimjoo-official/kian/releases)
 [![](https://img.shields.io/badge/dev--branch-develop--v1-blue)](https://github.com/bsimjoo-official/kian/tree/develop-v1)
 
-Kian is a simple Persian Windows app for teachers to easily roll call students. This app will create an Access-point and uses Flask as HTTP backend.
-Students should connect to the access point and enter server IP address in the browser, then for the first time they must submit their student number, application will save their MAC address and the student code for future. Teachers can use a Excel file which contains students code and their name. This app will edit the file and add new columns for each session and write about students' presence.
+Kian is an network-based program to help teachers, which was started with the aim of making attendance smart.
+
+This app will create an Access-point and uses Flask as HTTP backend.
+Students should connect to the access point and enter server IP address in the browser, then for the first time they must submit their student number, application will save their MAC address and the student code for future.
+
+https://user-images.githubusercontent.com/117530839/206903458-cf13800f-15a6-43e0-88d4-187c0e0cd1ca.mp4
+
+</div>
+
+## Features
+The Kian project has just started and has a good potential for development. Currently, the available features are as follows
+ - Suitable for classes with a large number of students.
+ - Simple and modern user interface.
+ - Easy to use and set up
+ - Support for mobile phones
+ - Ability to grade and announce grades
+ - Registration of attendance history and the history of the device used
+ - Prevent unauthorized registration of attendance for several students from one device ([Read more](#why-does-this-app-create-an-access-point))
+
 
 ## Who or What is Kian?
 
@@ -23,3 +42,5 @@ As far as I know other ways like using cookies or browser storage are much more 
 ## License
 
 This software is under GNU General Public License version 3 or (at your option) any later version. See LICENSE.
+
+##### *Thanks to [@farooqkz](https://github.com/farooqkz) for reading and editing documents*
