@@ -17,7 +17,8 @@ This app will use an **Access-point** ([why?](#why-does-this-app-uses-an-access-
 Students should connect to the access point and enter server IP address in the browser, then for the first time they must submit their student number, application will save their MAC address and the student code for future.
 
 https://user-images.githubusercontent.com/117530839/206903458-cf13800f-15a6-43e0-88d4-187c0e0cd1ca.mp4
-*BSimjoo login demo*
+
+*A demo of logging-in as BSimjoo*
 
 </div>
 
