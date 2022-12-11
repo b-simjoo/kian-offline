@@ -1,3 +1,4 @@
+<div align="center">
 In the name of God of the rainbow
 
 # Kian
@@ -7,7 +8,9 @@ Kian is an network-based program to help teachers, which was started with the ai
 This app will create an Access-point and uses Flask as HTTP backend.
 Students should connect to the access point and enter server IP address in the browser, then for the first time they must submit their student number, application will save their MAC address and the student code for future.
 
-![Demo video](Docs/Demo.mp4)
+https://user-images.githubusercontent.com/117530839/206903458-cf13800f-15a6-43e0-88d4-187c0e0cd1ca.mp4
+
+</div>
 
 ## Features
 The Kian project has just started and has a good potential for development. Currently, the available features are as follows
@@ -37,4 +40,4 @@ As far as I know other ways like using cookies or browser storage are much more 
 
 This software is under GNU General Public License version 3 or (at your option) any later version. See LICENSE.
 
-##### *Thanks to @farooqkz for reading and editing documents*
+##### *Thanks to [@farooqkz](https://github.com/farooqkz) for reading and editing documents*
