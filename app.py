@@ -90,7 +90,7 @@ def register_device():
     
 @app.route('/api/v1/attendance')
 def attendance():
-    if 'meeting' in g:
+    if g.meeting is not None:
         if (device:=session.get('device')) is not None:
             student = device.student
             query = (student.attendances
@@ -228,26 +228,27 @@ def get_device(device_id):
 @app.route('/api/v1/current_meeting')
 @login_required
 def get_current_meeting():
-    if 'meeting' in g and g.meeting.in_progress:
+    if g.meeting is not None and g.meeting.in_progress:
         return jsonify(g.meeting.to_dict())
     return jsonify(info="no in progress meeting"), 404
     
 @app.route('/api/v1/current_meeting',methods=['POST'])
 @login_required
 def start_meeting():
-    if 'meeting' not in g or g.meeting.in_progress == False:
+    if g.meeting is None:
         g.meeting = Meeting()
-        if g.meeting.save() == 1:
-            return jsonify(g.meeting.to_dict())
-        else:
-            return jsonify(done=False,  info="Unknown error while creating database record"), 500
+    elif g.meeting.in_progress == False:
+        g.meeting.in_progress = True
     else:
         return jsonify(info="a meeting is already in progress"), 202
+    if g.meeting.save() == 1:
+        return jsonify(g.meeting.to_dict())
+    return jsonify(done=False,  info="Unknown error while creating database record"), 500
     
 @app.route('/api/v1/current_meeting', methods=['DEL'])
 @login_required
 def end_current_meeting():
-    if 'meeting' in g and g.meeting.in_progress:
+    if g.meeting is not None and g.meeting.in_progress:
         g.meeting.in_progress=False
         g.meeting.save()
         return jsonify(g.meeting)
