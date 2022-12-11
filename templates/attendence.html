@@ -1,0 +1,15 @@
+<thead>
+    <tr><td colspan="100">سابقه حضور شما</td></tr>
+    <tr>
+    {% for date in dates %}
+        <td>{{date}}</td>
+    {% endfor %}
+    </tr>
+</thead>
+<tbody>
+    <tr>
+    {% for present in attendence %}
+        <td>{% if present == 'P' %}&#9989;{%else%}&#10060;{%endif%}</td>
+    {% endfor %}
+    </tr>
+</tbody>
