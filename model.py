@@ -34,7 +34,9 @@ class BaseModel(Model):
         return res
         
 class Meeting(BaseModel):   # Chosen meeting name because to prevent collide with flask session
-    date = DateField(default = lambda:datetime.now().date())
+    date = DateField(default = datetime.now().date)
+    start_at = TimeField(default = datetime.now().time)
+    end_at = TimeField(null=True)
     in_progress = BooleanField(default=True)
     # attendances
     # scores
@@ -51,10 +53,15 @@ class Student(BaseModel):
     
     @property
     def total_score(self):
-        return sum(map(lambda x:x.score,self.scores))           # type: ignore
+        return sum(map(lambda score:score.score,self.scores))           # type: ignore
+    
+    @property
+    def total_full_score(self):
+        return sum(map(lambda score:score.full_score,self.scores))           # type: ignore
     
     def to_dict(self, recurse=True, backrefs=True, only=None, exclude=None, extra_attrs=None, max_depth=None, update={}) -> dict[str, object]:
         update['total_score'] = self.total_score
+        update['total_full_score'] = self.total_full_score
         return super().to_dict(recurse, backrefs, only, exclude, extra_attrs, max_depth, update)
     
 
@@ -74,5 +81,6 @@ class Attendance(BaseModel):  # type: ignore
 class Score(BaseModel):
     student = ForeignKeyField(Student,backref="scores")
     score = IntegerField()
+    full_score = IntegerField(default=0)
     meeting = ForeignKeyField(Meeting, null=True, backref='scores')
     reason = TextField(null=True)
