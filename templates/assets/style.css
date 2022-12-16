@@ -17,6 +17,8 @@ html, body{
     box-sizing: border-box;
     font-feature-settings: "calt" 1;  /* Enable ligatures for IE 10+, Edge */
     text-rendering: optimizeLegibility; /* Force ligatures for Webkit, Blink, Gecko */
+    transition: all .2s;
+    scroll-behavior: smooth;
 }
 
 h1,h2,h3,h4,h5{
@@ -33,18 +35,39 @@ h5{font-size: 1.2rem; font-weight: 500;}
 small{font-size: .8rem; font-weight: 200; margin:5px; display: inline-block;}
 p{margin:5px;}
 
-.container{
+.inline{display: inline;}
+.block{display: block;}
+.fit-content{width: fit-content;}
+.float-right{float: right;}
+.middle{
+    position: relative;
+    transform: translateY(-50%);
+    top: 50%;
+    margin: 0;
+}
+.center{
+    position: relative;
+    transform: translateX(-50%);
+    left: 50%;
+    margin: 0;
+}
+
+.view-container{
     position:absolute;
     width: 100%;
     margin: 0;
     transform: translateY(-50%);
-    top:45%;
+    top:50%;
 }
 
 .content{
     margin: auto;
     width: 40%;
     padding: 5px;
+}
+
+.admin .content{
+    width: 85%;
 }
 
 #msg-container{
@@ -69,6 +92,7 @@ p{margin:5px;}
     color: white;
     font-size: .8rem;
     font-weight: 600;
+    cursor: pointer;
 }
 
 .msg.error{
@@ -119,36 +143,40 @@ p{margin:5px;}
     color:hsl(110, 100%, 50%);
 }
 
-i{color:var(--icon)}
-button i{color:var(--text)}
+i.fa-solid {color:var(--icon)}
+button i.fa-solid{color:var(--text)}
 i.absent{color:var(--absent)}
 i.present{color: var(--present);}
-i.large-icon{font-size: 5rem;}
-i.xlarge-icon{font-size: 7rem;}
-i.xxlarge-icon{font-size: 10rem;}
+i.large{font-size: 5rem;}
+i.xlarge{font-size: 7rem;}
+i.xxlarge{font-size: 10rem;}
+
+.secondary-text{color:var(--text-secondary)}
 
 input,button{
     display: block;
-    border: solid var(--border) 2px;
-    background-color: var(--dark-bg);
-    color: var(--text);
-    padding-top: auto;
-    padding-bottom: auto;
+    border: solid 2px;
+    padding-top: calc(.5rem - 2px);
+    padding-bottom: calc(.5rem - 2px);
     padding-left: 1rem;
     padding-right: 1rem;
-    height: 2rem;
     font-size: 1rem;
     border-radius: 1rem;
     margin:auto;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    min-height: 2rem;
+    color:var(--text);
 }
 
-input{
-    width: 85%;
+button{
+    background-color: var(--primary-button);
+    border-color: var(--primary-button);
 }
 
-button[name="submit"]{
-    float: right;
-    margin-right: 5rem;
+button.secondary{
+    background-color: var(--dark-bg);
+    border-color: var(--border);
 }
 
 button#retry{
@@ -166,6 +194,20 @@ button#retry{
 button#retry i{
     color: white;
     font-size: 1rem;
+}
+
+button[name="submit"]{
+    float: right;
+    margin-right: 7.5%;
+}
+input{
+    width: 85%;
+    border: solid var(--border) 2px;
+    background-color: var(--dark-bg);
+}
+
+input.error{
+    background-color: var(--input-error);
 }
 
 input[type="number"]{
@@ -202,11 +244,15 @@ input::-webkit-inner-spin-button {
     width: 3rem;
 }
 
-button:active,
+button:hover,
 input:active,
 input:focus{
     outline:0;
-    background-color: var(--light-bg);
+    box-shadow: 0 0 10px 2px white;
+}
+
+button:active{
+    transform: scale(95%);
 }
 
 span.pre-function{color: var(--pre-function)}
@@ -224,8 +270,16 @@ span.note::before{
 .box{
     background-color: var(--dark-bg);
     border: 2px solid var(--border);
-    border-radius: 10px;
-    padding: 2px;
+    border-radius: 1rem;
+    margin:5px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 10px;
+    width: fit-content;
+}
+
+.box.borderless{
+    border:none;
 }
 
 #wait-slide h5{
@@ -271,8 +325,27 @@ thead{
 }
 
 td {
-    border: 1px solid var(--table);
-    color: var(--table);
+    border: 1px solid var(--border);
+    color: var(--text);
+}
+
+.content#login{
+    max-width: 45%;
+}
+
+.content#admin-panel{
+    height:85vh;
+    display: flex;
+    flex-flow: column;
+}
+
+.content#admin-panel .header{
+    width: 100%;
+    flex: 0 1 auto;
+}
+.content#admin-panel .body{
+    width: 100%;
+    flex: 1 1 auto
 }
 
 @media only screen and (max-width: 650px) {

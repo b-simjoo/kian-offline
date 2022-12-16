@@ -1,8 +1,9 @@
 :root{
     --text-len: 41;
+    --animation-duration: .75s;
 }
 
-.hidden{display: none;}
+.hidden{display: none !important;}
 
 .typing-in::after{
     animation: typing calc(.1s * var(--text-len)) steps(var(--text-len)) forwards, blink .5s alternate-reverse infinite;
@@ -14,14 +15,14 @@
     width: 0%;
 }
 
-.fade-in{animation: fade 1s reverse forwards ease-in-out;}
-.fade-out{animation: fade 1s forwards ease-in-out;}
-.fade-left-in{animation: fade 1s reverse forwards ease-in-out, left 1s forwards ease-in-out;}
-.fade-left-out{animation: fade 1s forwards ease-in-out, left 1s reverse forwards ease-in-out;}
-.fade-right-in{animation: fade 1s reverse forwards ease-in-out, right 1s forwards ease-in-out;}
-.fade-right-out{animation: fade 1s forwards ease-in-out, right 1s reverse forwards ease-in-out;}
-.fade-down-in{animation: fade 1s reverse forwards ease-in-out, down 1s forwards ease-in-out;}
-.fade-down-out{animation: fade 1s forwards ease-in-out, down 1s reverse forwards ease-in-out;}
+.fade-in{animation: fade var(--animation-duration) reverse forwards ease-in-out;}
+.fade-out{animation: fade var(--animation-duration) forwards ease-in-out;}
+.fade-left-in{animation: fade var(--animation-duration) reverse forwards ease-in-out, left var(--animation-duration) forwards ease-in-out;}
+.fade-left-out{animation: fade var(--animation-duration) forwards ease-in-out, left var(--animation-duration) reverse forwards ease-in-out;}
+.fade-right-in{animation: fade var(--animation-duration) reverse forwards ease-in-out, right var(--animation-duration) forwards ease-in-out;}
+.fade-right-out{animation: fade var(--animation-duration) forwards ease-in-out, right var(--animation-duration) reverse forwards ease-in-out;}
+.fade-down-in{animation: fade var(--animation-duration) reverse forwards ease-in-out, down var(--animation-duration) forwards ease-in-out;}
+.fade-down-out{animation: fade var(--animation-duration) forwards ease-in-out, down var(--animation-duration) reverse forwards ease-in-out;}
 .earthquake{animation: earthquake .5s alternate ease-in-out 2;}
 
 @keyframes typing {

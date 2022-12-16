@@ -1,13 +1,16 @@
 :root{
     --background: #1f2237;
     --border: #FFCC71;
-    --text: #FFCC71;
-    --icon: #f6005e;
+    --text: #ffe7b9;
+    --text-secondary: #da7194;
+    --icon: #ff0055;
     --dark-bg: #171717;
     --light-bg: #424242;
-    --absent:#ff735b;
-    --present:#69ff5b;
-    --table:#ffeed0;
+    --input-error: #390000;
+    --primary-button: #680023;
+    --absent: #ff735b;
+    --present: #69ff5b;
+    --table: #ffeed0;
 
     /*----[ syntax highlight colors ]----*/
     --pre-function: #f8518d;

@@ -67,7 +67,7 @@ def _db_close(exc):
 
 @app.route('/')
 def index():
-    return render_template('students.html')
+    return render_template('students.html',registered = (session['device'].student is not None and not session.get('local_user',False)))
 
 EASTER_EGG = " EASTER EGG: I'm so happy that you are reading this! good luck and hack the planet! BSimjoo ;-)"      # An easter-egg for my students!
 
@@ -75,19 +75,26 @@ EASTER_EGG = " EASTER EGG: I'm so happy that you are reading this! good luck and
 def register_device():
     device = session['device']
     if (student:=device.student) is None:   #device is not registered
-        if (std_num:=request.args.get('std_num')) is not None:
+        if not (std_num:=request.args.get('std_num')) in (None,''):
             if (student:=Student.get_or_none(Student.number==std_num)) is not None:
                 device.student = student
                 device.save()
                 session['student'] = student
-                return jsonify(student_name=student.name)
+                return jsonify(name=student.name)
             else:   # student not existed
-                return jsonify( info='student not existed. check std_num.'+EASTER_EGG), 404
+                return jsonify(info='student not existed. check std_num.'+EASTER_EGG), 404
         else:   # std_num didn't send
-            return jsonify( info="std_num didn't send."+EASTER_EGG), 400
+            return jsonify(info="std_num didn't send."+EASTER_EGG), 400
     else:   # The student has already registered this device
-        return jsonify( student_name=student.name, info="device is already register, new registration is forbidden."+EASTER_EGG), 403
-    
+        return jsonify(name=student.name, info="device is already register, new registration is forbidden."+EASTER_EGG), 403
+
+@app.route('/api/v1/whoami')
+def whoami():
+    device = session['device']
+    if (student:=device.student) is not None:
+        return jsonify(name = student.name, number=student.number)
+    abort(400)
+
 @app.route('/api/v1/attendance')
 def attendance():
     if g.meeting is not None:
@@ -134,18 +141,18 @@ def login():
             return redirect('/')
     if session.get('admin') and not app.debug:      # TODO: remove `app.debug`
         return jsonify(logged_in=True)
-    if (not session.get('banned')):
+    if session.get('tries_left',5) > 0:
         username = request.form.get('username',type=str)
         password = request.form.get('password',type=str)
         if username and password:
             if (config['admin username'],config['admin password']) == (username, password):
                 session['admin'] = True
+                session['tries_left'] = 5
                 return jsonify(logged_in=True)
-        session['failed tries'] = session.get('failed tries',0) + 1
-        if session['failed tries'] == 5:
-            session['banned'] = True
-            return jsonify( banned=True, info="login failed, you got banned."+EASTER_EGG), 401
-        return jsonify( banned=False, failed_tries=session['failed tries'], info="login failed."+EASTER_EGG), 401
+        session['tries_left'] = session.get('tries_left',5) - 1
+        if session['tries_left'] == 0:
+            return jsonify(info="login failed, you got banned."+EASTER_EGG), 403
+        return jsonify(tries_left=session['tries_left'], info="login failed."+EASTER_EGG), 401
     else:
         return jsonify( info="you are banned."+EASTER_EGG), 403
     
@@ -153,8 +160,10 @@ def login():
 def can_login():
     if config.get('admin from localhost',True):
         if request.remote_addr not in ['localhost','127.0.0.1']:
-            return jsonify(can_login=False, banned = session.get('banned',False))
-    return jsonify(can_login=True, banned = session.get('banned',False))
+            return jsonify(can_login=False, banned = session.get('banned',False)), 403
+    if session.get('banned',False):
+        return jsonify(can_login=True, banned = True), 403
+    return jsonify(can_login=True, banned = False)
     
 def login_required(func):
     @functools.wraps(func)

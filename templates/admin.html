@@ -1,4 +1,4 @@
-{% extend 'base.html' %}
+{% extends 'base.html' %}
 {% block title %}Login - {% endblock %}
 {% block head %}
 {% if admin %}
@@ -7,15 +7,36 @@
 <script type="text/javascript" src="assets/admin.js"></script>
 {% endblock %}
 {% block body %}
-<div id="container" class="container">
-    <div id="login" class="content">
-        <h4><i class="fa-solid fa-right-to-bracket"></i> Login form:</h4>
-        <input id="username" type="text" placeholder="User name">
-        <input id="password" type="password" placeholder="Password">
-        <button name="submit">Login <i class="fa-solid fa-caret-right"></i></button>
+<div id="container" class="view-container admin">
+    <div id="login" class="content hidden">
+        <form onsubmit="login(event);">
+            <h4><i class="fa-solid fa-right-to-bracket"></i> Login form:</h4>
+            <input name="username" type="text" placeholder="User name">
+            <input name="password" type="password" placeholder="Password">
+            <button name="submit">Login <i class="fa-solid fa-caret-right"></i></button>
+        </form>
     </div>
-    <div id="loading" class="content hidden">
-        <h5><span class="spinner"></span> <kbd id="loading-text"></kbd></h5>
+    <div id="admin-panel" class="content hidden">
+        <div class="box header borderless">
+            <small class="secondary-text middle" id="date-time"></small>
+            <script type="text/javascript">
+                setInterval(()=>{
+                    let d = new Date();
+                    let ye = new Intl.DateTimeFormat('en', { year: 'numeric' }).format(d);
+                    let mo = new Intl.DateTimeFormat('en', { month: 'numeric' }).format(d);
+                    let da = new Intl.DateTimeFormat('en', { day: '2-digit' }).format(d);
+                    let time = new Intl.DateTimeFormat('en', { hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: true, }).format(d);
+                    document.getElementById('date-time').innerText = `${da}-${mo}-${ye} ${time}`;
+                },1000);
+            </script>
+            <div class = "fit-content float-right">
+                <button class="inline secondary"><i class="fa-solid fa-dice"></i> Choose random</button>
+                <button class="inline"><i class="fa-solid fa-play"></i> Start meeting</button>
+            </div>
+        </div>
+        <div id="students-table" class="box body borderless">
+            <h1 class="spinner middle center inline"></h1>
+        </div>
     </div>
 </div>
 {% endblock %}
