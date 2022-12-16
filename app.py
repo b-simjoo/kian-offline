@@ -1,7 +1,7 @@
 from flask import Flask, request, session, render_template, redirect, jsonify, g, url_for, abort
 from flask_session import Session
 from flask_mobility import Mobility
-from datetime import timedelta
+from datetime import timedelta, datetime
 from customjsonencoder import CustomJSONEncoder
 from openpyxl import load_workbook
 from model import db, Student, Device, Attendance, Score, Meeting
@@ -119,7 +119,8 @@ def attendance():
                 'meetings': list(Meeting.select().dicts()),
                 'devices': list(d.to_dict(recurse=False) for d in student.devices),
                 'current_meeting': g.meeting.id,
-                'total_score': student.total_score
+                'total_score': student.total_score,
+                'total_full_score': student.total_full_score
             }
             return jsonify(res), code
         else:   # user has not registered yet
@@ -259,6 +260,7 @@ def start_meeting():
 def end_current_meeting():
     if g.meeting is not None and g.meeting.in_progress:
         g.meeting.in_progress=False
+        g.meeting.end_at = datetime.now().time()
         g.meeting.save()
         return jsonify(g.meeting)
     return jsonify(info="no in progress meeting"), 404
