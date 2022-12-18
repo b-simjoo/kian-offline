@@ -49,7 +49,7 @@ function shake(element) {
 }
 
 function kbd_clear(element){
-  txt = element.innerText;
+  let txt = element.innerText;
   element.classList.replace('typing-in','typing-out')
   return sleep(100 * txt.length).then(()=>element.classList.remove('typing-out'));
 }
@@ -65,7 +65,7 @@ function kbd_type(element,inner_html){
   }
   
   element.innerHTML = inner_html;
-  txt = element.innerText;
+  let txt = element.innerText;
   r.style.setProperty('--text-len',txt.length.toString());
   element.classList.add('typing-in');
   return sleep(100 * txt.length);

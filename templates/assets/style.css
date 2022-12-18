@@ -266,6 +266,9 @@ span.note::before{
     content:'\f06a\00a0';
     color:#00b7ff
 }
+span.in-process{
+    color:var(--in-process)
+}
 
 .box{
     background-color: var(--dark-bg);
@@ -327,6 +330,23 @@ thead{
 td {
     border: 1px solid var(--border);
     color: var(--text);
+}
+
+.tooltip{
+    font-size: .7rem;
+    line-height: .6rem;
+    position:absolute;
+    background-color: var(--tooltip-bg);
+    backdrop-filter: blur(5px);
+    border: solid 2px var(--border-secondary);
+    border-radius: 10px;
+    transform: translateX(-50%);
+    margin-top: 5px;
+    padding: 2px;
+}
+
+.tooltip .spinner{
+    margin: 5rem;
 }
 
 .content#login{

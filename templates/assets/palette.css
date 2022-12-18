@@ -1,16 +1,19 @@
 :root{
     --background: #1f2237;
     --border: #FFCC71;
+    --border-secondary: #680023;
     --text: #ffe7b9;
     --text-secondary: #da7194;
     --icon: #ff0055;
     --dark-bg: #171717;
     --light-bg: #424242;
+    --tooltip-bg: rgba(23, 23, 23, 0.6);
     --input-error: #390000;
     --primary-button: #680023;
     --absent: #ff735b;
     --present: #69ff5b;
     --table: #ffeed0;
+    --in-process: #0d9b00;
 
     /*----[ syntax highlight colors ]----*/
     --pre-function: #f8518d;

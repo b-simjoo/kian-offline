@@ -41,7 +41,12 @@ class Meeting(BaseModel):   # Chosen meeting name because to prevent collide wit
     # attendances
     # scores
     
+    @property
+    def count_of_attendances(self):
+        return self.attendances.count() # type:ignore
+    
     def to_dict(self, recurse=True, backrefs=True, only=None, exclude=None, extra_attrs=None, max_depth=None, update={}) -> dict[str, object]:
+        update['count_of_attendances'] = self.count_of_attendances
         return super().to_dict(recurse, backrefs, only, exclude, extra_attrs, max_depth, update)
 
 class Student(BaseModel):

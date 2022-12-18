@@ -126,6 +126,33 @@ function render_student_info(info){
     });
 }
 
+function createTable(info){
+    return table(undefined,
+        thead(undefined,
+            tr(undefined,
+                info.meetings.map(meeting=>td({id:'meet-'+meeting.id},meeting.date,'<br>',meeting.start_at,'-',meeting.end_at))
+            )
+        ),
+        tbody(undefined,
+            tr(undefined,
+                info.meetings.map(meeting=>{
+                    let attendance = info.attendances.find(a=>a.meeting.id === meeting.id);
+                    let score = info.scores.find(s=>s.meeting.id === meet.id);
+                    if (typeof(attendance)!=='undefined'){
+                        let elem = td({id:'att-'+attendance.id},
+                            '<i class="present fa-solid fa-circle-check"></i>',
+                            typeof(score) !== 'undefined' ? span({id: 'scr-'+score.id, cls: ['score']},score.score.toString(),' / ',score.full_score.toString()) : ''
+                        );
+                        // TODO: add onhover and onclick actions to elem
+                        return elem;
+                    } else
+                        return td(undefined,'<i class="absent fa-solid fa-circle-xmark"></i>');
+                })
+            )    
+        )
+    )
+}
+
 window.onload = ()=>{
     if (typeof(registered)!=='undefined' && registered){
         request('whoami',undefined,undefined,

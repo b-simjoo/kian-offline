@@ -268,7 +268,7 @@ def end_current_meeting():
 @app.route('/api/v1/meetings')
 @login_required
 def get_meetings():
-    return jsonify(list(Meeting.select().dicts()))
+    return jsonify([meeting.to_dict(backrefs=False) for meeting in Meeting.select()])
 
 @app.route('/api/v1/meetings/<int:meeting_id>')
 @login_required
