@@ -29,10 +29,6 @@ config:dict = json.load(open('config.json','r'))
 def initialize():
     db.connect()
     db.create_tables([Student,Device,Attendance,Score,Meeting])
-    
-    if (meeting:=Meeting.get_or_none(Meeting.in_progress==True)) is not None:
-        meeting.in_progress = False
-        meeting.save()
 
 @app.before_request
 def _before_request():
@@ -245,10 +241,8 @@ def get_current_meeting():
 @app.route('/api/v1/current_meeting',methods=['POST'])
 @login_required
 def start_meeting():
-    if g.meeting is None:
-        g.meeting = Meeting()
-    elif g.meeting.in_progress == False:
-        g.meeting.in_progress = True
+    if g.meeting is None or not g.meeting.in_progress:
+        g.meeting = Meeting.create()
     else:
         return jsonify(info="a meeting is already in progress"), 202
     if g.meeting.save() == 1:
@@ -262,7 +256,7 @@ def end_current_meeting():
         g.meeting.in_progress=False
         g.meeting.end_at = datetime.now().time()
         g.meeting.save()
-        return jsonify(g.meeting)
+        return jsonify(g.meeting.to_dict())
     return jsonify(info="no in progress meeting"), 404
             
 @app.route('/api/v1/meetings')

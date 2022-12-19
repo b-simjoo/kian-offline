@@ -166,6 +166,10 @@ function attachTooltip(element, tooltipContentGenerator) {
     }
 }
 
+function getRndInteger(min, max) {
+    return Math.floor(Math.random() * (max - min) ) + min;
+}
+
 document.onmousemove = (event) => {
     let eventDoc, doc, body;
     if (event.pageX == null && event.clientX != null) {

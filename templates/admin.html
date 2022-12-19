@@ -30,8 +30,9 @@
                 },1000);
             </script>
             <div class = "fit-content float-right">
-                <button class="inline secondary"><i class="fa-solid fa-dice"></i> Choose random</button>
-                <button class="inline"><i class="fa-solid fa-play"></i> Start meeting</button>
+                <button class="inline secondary" onclick="renderTable()"><i class="fa-solid fa-rotate-right"></i></button>
+                <button id="choose-random-btn" class="inline secondary" onclick="chooseRandom()"><i class="fa-solid fa-dice"></i> Choose random</button>
+                <button id="start-meeting-btn" class="inline" onclick="startMeeting()"><i class="fa-solid fa-play"></i> Start meeting</button>
             </div>
         </div>
         <div id="students-table" class="box body borderless">

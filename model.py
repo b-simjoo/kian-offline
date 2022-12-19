@@ -34,8 +34,8 @@ class BaseModel(Model):
         return res
         
 class Meeting(BaseModel):   # Chosen meeting name because to prevent collide with flask session
-    date = DateField(default = datetime.now().date)
-    start_at = TimeField(default = datetime.now().time)
+    date = DateField(default = lambda:datetime.now().date())
+    start_at = TimeField(default = lambda:datetime.now().time())
     end_at = TimeField(null=True)
     in_progress = BooleanField(default=True)
     # attendances

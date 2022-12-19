@@ -1,6 +1,6 @@
 function register (){
     let stdNum = document.getElementById('student-code').value
-    request('register',{'std_num':std_num},undefined,(res)=>{
+    request('register',{'std_num':stdNum},undefined,(res)=>{
         show_msg('success', 'Your device registered.')
         document.getElementById('student-code').classList.remove('error');
         console.log(res);
