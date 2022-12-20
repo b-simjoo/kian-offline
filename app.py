@@ -4,7 +4,7 @@ from flask_mobility import Mobility
 from datetime import timedelta, datetime
 from customjsonencoder import CustomJSONEncoder
 from openpyxl import load_workbook
-from model import db, Student, Device, Attendance, Score, Meeting
+from model import db, Student, Device, Attendance, Score, Meeting, _TABLES_
 from getmac import get_mac_address
 from tempfile import NamedTemporaryFile
 
@@ -28,7 +28,7 @@ config:dict = json.load(open('config.json','r'))
 @app.before_first_request
 def initialize():
     db.connect()
-    db.create_tables([Student,Device,Attendance,Score,Meeting])
+    db.create_tables(_TABLES_)
 
 @app.before_request
 def _before_request():
@@ -47,7 +47,7 @@ def _before_request():
             if app.debug:
                 mac = 'local'
             else:
-                return
+                return redirect(url_for('admin'))
         else:
             mac = get_mac_address(ip=request.remote_addr)
         device,created = Device.get_or_create(mac=mac)
@@ -63,7 +63,7 @@ def _db_close(exc):
 
 @app.route('/')
 def index():
-    return render_template('students.html',registered = (session['device'].student is not None and not session.get('local_user',False)))
+    return render_template('students.html',registered = (session['device'].student is not None))
 
 EASTER_EGG = " EASTER EGG: I'm so happy that you are reading this! good luck and hack the planet! BSimjoo ;-)"      # An easter-egg for my students!
 
@@ -96,17 +96,18 @@ def attendance():
     if g.meeting is not None:
         if (device:=session.get('device')) is not None:
             student = device.student
-            query = (student.attendances
+            query = (g.meeting.attendances
                      .select()
-                     .join(Meeting, on=Attendance.meeting==Meeting.id)      # type: ignore
-                     .where(Meeting.id==g.meeting.id)                          # type: ignore
+                     .join(Student, on=Attendance.student==Student.id)      # type: ignore
+                     .where(Student.id==student.id)                          # type: ignore
                     )
             code = 200
             res={}
-            if query.count()==0:
-                Attendance(student = student, device = device, meeting = g.meeting).save()
+            if query.count()!=0:
                 code = 203
                 res['info']='Your presence is already registered.'+EASTER_EGG
+            else:
+                Attendance.create(student = student, device = device, meeting = g.meeting).save()
             res={
                 'name':student.name,
                 'number': student.number,
@@ -136,7 +137,7 @@ def login():
     if config.get('admin from localhost',True):
         if request.remote_addr not in ['localhost','127.0.0.1']:
             return redirect('/')
-    if session.get('admin') and not app.debug:      # TODO: remove `app.debug`
+    if session.get('admin'):
         return jsonify(logged_in=True)
     if session.get('tries_left',5) > 0:
         username = request.form.get('username',type=str)
@@ -195,7 +196,7 @@ def set_students():
 @app.route('/api/v1/students')
 @login_required
 def get_students():
-    return jsonify([std.to_dict() for std in Student.select()])
+    return jsonify([std.to_dict(max_depth=1) for std in Student.select()])
     
 @app.route('/api/v1/students/<int:number>')
 def get_student(number):
