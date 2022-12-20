@@ -89,3 +89,5 @@ class Score(BaseModel):
     full_score = IntegerField(default=0)
     meeting = ForeignKeyField(Meeting, null=True, backref='scores')
     reason = TextField(null=True)
+
+_TABLES_ = (Meeting, Student, Attendance, Score)
