@@ -364,6 +364,10 @@ tr.randomly-chosen{
     background-color: var(--light-bg);
 }
 
+td.student-name{
+    white-space: nowrap;
+}
+
 .tooltip{
     font-size: .7rem;
     line-height: .6rem;
