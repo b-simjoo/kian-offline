@@ -1,4 +1,4 @@
-let curtain_slide = 0;
+var curtain_slide = 0;
 function slide(slide) {
     let container = document.getElementById('container');
     let slides = container.children;
@@ -13,7 +13,7 @@ function slide(slide) {
     }
 }
 
-let curtain_view = null;
+var curtain_view = null;
 function loadView(viewId) {
     let view = document.getElementById(viewId);
     if (curtain_view) {
@@ -127,6 +127,7 @@ function textNode(...content) {
 var mouseX;
 var mouseY;
 var mouseTarget = null;
+var tooltipHideTimeout = null;
 function attachTooltip(element, tooltipContentGenerator) {
     if (typeof (element) === 'string')
         return attachTooltip(document.getElementById(element), tooltipContentGenerator);
@@ -137,6 +138,7 @@ function attachTooltip(element, tooltipContentGenerator) {
         mouseTarget = element;
         let tooltipElement = div({ id: 'tooltip', cls: ['tooltip', 'hidden'] }, span({ 'cls': 'spinner' }));
         tooltipElement.onmouseover = () => {
+            tooltipHideTimeout && clearTimeout(tooltipHideTimeout);
             element.onmouseleave = () => { };
             tooltipElement.onmouseleave = () => {
                 if(mouseTarget === element)
@@ -153,15 +155,18 @@ function attachTooltip(element, tooltipContentGenerator) {
             animate(tooltipElement, 'fade', 'in');
         }, 2000)
         element.onmouseleave = () => {
-            if (tooltipTimeout !== null) {
-                clearTimeout(tooltipTimeout);
-                tooltipTimeout = null;
-            }
-            if (document.body.contains(tooltipElement))
-                animate(tooltipElement,'fade','out').then(()=>{tooltipElement.remove()})
-            if(mouseTarget === element)
-                mouseTarget = null;
-            element.onmouseleave = () => { };
+            tooltipHideTimeout = setTimeout(()=>{
+                tooltipHideTimeout = null;
+                if (tooltipTimeout !== null) {
+                    clearTimeout(tooltipTimeout);
+                    tooltipTimeout = null;
+                }
+                if (document.body.contains(tooltipElement))
+                    animate(tooltipElement,'fade','out').then(()=>{tooltipElement.remove()})
+                if(mouseTarget === element)
+                    mouseTarget = null;
+                element.onmouseleave = () => { };
+            },200);
         }
     }
 }

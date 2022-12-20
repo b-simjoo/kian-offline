@@ -5,7 +5,7 @@ html, body{
     padding: 0;
     margin: 0;
     width: 100%;
-    min-height: 100%;
+    height: 100%;
     background-color: var(--background);
     color: var(--text);
     font-size: 100%;
@@ -34,6 +34,12 @@ h4{font-size: 1.7rem; font-weight: 500;}
 h5{font-size: 1.2rem; font-weight: 500;}
 small{font-size: .8rem; font-weight: 200; margin:5px; display: inline-block;}
 p{margin:5px;}
+code{
+    background-color: rgb(34, 0, 20);
+    padding: 2px;
+    border-radius: 4px;
+    color:rgb(255, 152, 67);
+}
 
 .inline{display: inline;}
 .inline-block{display: inline-block;}
@@ -46,11 +52,18 @@ p{margin:5px;}
     top: 50%;
     margin: 0;
 }
-.center{
+.inline.center,
+.inline-block.center
+{
     position: relative;
     transform: translateX(-50%);
     left: 50%;
     margin: 0;
+}
+
+.block.center{
+    text-align: center;
+    margin: auto;
 }
 
 .view-container{
@@ -76,6 +89,7 @@ p{margin:5px;}
     width: 40%;
     transform: translateX(-50%);
     left: 50%;
+    z-index: 1000;
 }
 
 #msg-container .msg:nth-child(1){opacity: 1;}
@@ -84,6 +98,7 @@ p{margin:5px;}
 #msg-container .msg:nth-child(4){opacity: .4;}
 #msg-container .msg:nth-child(5){opacity: .2;}
 #msg-container .msg:nth-child(n+6){opacity: 0;}
+#msg-container .msg:hover{opacity: 1;}
 
 .msg{
     margin:2px;
@@ -302,6 +317,8 @@ span.in-process{
 }
 
 kbd{
+    display: inline-block;
+    width: fit-content;
     position: relative;
     font-family: 'Fira Code';
     text-decoration: none;
@@ -318,8 +335,11 @@ kbd::after{
     background-color: var(--background);
 }
 
-#student-attendance{
-    overflow-x: auto;
+#table-container{
+    height: 100%;
+    overflow: auto;
+    width: fit-content;
+    max-width: 100%;
 }
 
 table {
@@ -373,11 +393,12 @@ tr.randomly-chosen{
 
 .content#admin-panel .header{
     width: 100%;
-    flex: 0 1 auto;
+    flex: 0 0 auto;
 }
 .content#admin-panel .body{
     width: 100%;
-    flex: 1 1 auto
+    flex: 0 1 100%;
+    height: 0;
 }
 
 @media only screen and (max-width: 650px) {

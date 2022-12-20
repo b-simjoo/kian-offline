@@ -29,23 +29,31 @@ function login(e) {
     req.send(formData);
 }
 
+var Meetings, Students;
 function renderTable() {
     request('meetings', undefined, undefined, (meetings) => {
+        Meetings = meetings;
         request('students', undefined, undefined, (students) => {
             if (students.length > 0) {
+                Students = students;
                 const studentsTable = createTable(meetings, students);
-                document.getElementById('students-table').replaceChildren(studentsTable);
+                document.getElementById('students-table').replaceChildren(div({id:"table-container", cls: ['block', 'center']},studentsTable));
             } else {
-                document.getElementById('students-table').replaceChildren(span({ cls: ['middle', 'center', 'inline-block'] }, 'Your class is empty!'));
+                document.getElementById('students-table').replaceChildren(div({ cls: ['middle', 'center', 'block'] },
+                    p(undefined,'Your class is empty!'),
+                    small(undefined, 'to add students shutdown server, go to app root and<br>run <code>python worksheetUtil.py load &lt;yourfile&gt;</code> and<br>then restart the server, <a href="https://github.com/bsimjoo-official/kian">more info</a>')      // TODO: add document for this
+                ));
             }
         })
     })
 }
 
 function createTable(meetings, students) {
+    let rowCounter=1;
     return table({id:'students-table',cls:'students-table'},
         thead(undefined,
             tr(undefined,
+                td(undefined, 'No.'),
                 td(undefined, 'Students'),
                 meetings.length > 0 ?
                     meetings.map(meeting => {
@@ -87,22 +95,13 @@ function createTable(meetings, students) {
                     p(undefined, span({ cls: 'secondary-text' }, 'Count of devices: '), textNode(student.devices.length))
                 ]))
                 return tr({ id: 'std-' + student.id, cls: 'student' },
+                    td(undefined,(rowCounter++).toString()),
                     student_td,
                     ...(meetings.length > 0 ? meetings.map(meeting => {
-                        let attendance = student.attendances.find(a => a.meeting.id === meeting.id);
-                        let score = student.scores.find(s => s.meeting.id === meeting.id);
+                        let attendance = student.attendances.find(a => a.meeting === meeting.id);
+                        let score = student.scores.find(s => s.meeting === meeting.id);
                         let score_td = td({ cls: ['score', 'empty'] }, '-');
                         let attendance_td = td({ cls: 'attendance' }, '<i class="absent fa-solid fa-circle-xmark"></i>');
-                        if (typeof (score) !== 'undefined') {
-                            score_td = td({ id: 'scr-' + score.id, cls: 'score' }, score.score.toString(), ' / ', score.full_score.toString());
-                            attachTooltip(score_td, () => [
-                                p(undefined, span({ cls: 'secondary-text' }, 'Name: '), student.name),
-                                p(undefined, span({ cls: 'secondary-text' }, 'Number: '), student.number),
-                                p(undefined, span({ cls: 'secondary-text' }, 'Score: '), score.score),
-                                p(undefined, span({ cls: 'secondary-text' }, 'Full-score: '), score.full_score),
-                                p(undefined, span({ cls: 'secondary-text' }, 'Reason: '), score.reason)
-                            ]);
-                        }
                         if (typeof (attendance) !== 'undefined') {
                             attendance_td = td({ id: 'att-' + attendance.id, cls: 'attendance' }, '<i class="present fa-solid fa-circle-check"></i>');
                             attachTooltip(attendance_td, () => {
@@ -113,6 +112,16 @@ function createTable(meetings, students) {
                                 ]
                                 )
                             })
+                            if (typeof (score) !== 'undefined') {
+                                score_td = td({ id: 'scr-' + score.id, cls: 'score' }, score.score.toString(), ' / ', score.full_score.toString());
+                                attachTooltip(score_td, () => [
+                                    p(undefined, span({ cls: 'secondary-text' }, 'Name: '), student.name),
+                                    p(undefined, span({ cls: 'secondary-text' }, 'Number: '), student.number),
+                                    p(undefined, span({ cls: 'secondary-text' }, 'Score: '), score.score),
+                                    p(undefined, span({ cls: 'secondary-text' }, 'Full-score: '), score.full_score),
+                                    p(undefined, span({ cls: 'secondary-text' }, 'Reason: '), score.reason)
+                                ]);
+                            }
                         }
                         return [attendance_td, score_td];
                     }) : [td(undefined, '')]),
@@ -164,96 +173,14 @@ function startMeeting(){
 }
 
 function chooseRandom(){
+    if (document.getElementsByClassName('randomly-chosen').length==1)
+        document.getElementsByClassName('randomly-chosen')[0].classList.remove('randomly-chosen');
     let rndBtn = document.getElementById('choose-random-btn');
-    rndBtn.setAttribute('disabled','true');
     let students = document.getElementById('students-table').getElementsByTagName('tbody')[0].children;
     let rnd = getRndInteger(0,students.length-1);
     students[rnd].classList.add('randomly-chosen');
-    sleep(25).then(()=>{
-        students[rnd].classList.remove('randomly-chosen');
-        let newRnd = rnd;
-        while (newRnd===rnd)
-            newRnd = getRndInteger(0,students.length-1);
-        rnd = newRnd;
-        students[rnd].classList.add('randomly-chosen');
-    }).then(()=>sleep(50))
-    .then(()=>{
-        students[rnd].classList.remove('randomly-chosen');
-        let newRnd = rnd;
-        while (newRnd===rnd)
-            newRnd = getRndInteger(0,students.length-1);
-        rnd = newRnd;
-        students[rnd].classList.add('randomly-chosen');
-    }).then(()=>sleep(75))
-    .then(()=>{
-        students[rnd].classList.remove('randomly-chosen');
-        let newRnd = rnd;
-        while (newRnd===rnd)
-            newRnd = getRndInteger(0,students.length-1);
-        rnd = newRnd;
-        students[rnd].classList.add('randomly-chosen');
-    }).then(()=>sleep(100))
-    .then(()=>{
-        students[rnd].classList.remove('randomly-chosen');
-        let newRnd = rnd;
-        while (newRnd===rnd)
-            newRnd = getRndInteger(0,students.length-1);
-        rnd = newRnd;
-        students[rnd].classList.add('randomly-chosen');
-    }).then(()=>sleep(125))
-    .then(()=>{
-        students[rnd].classList.remove('randomly-chosen');
-        let newRnd = rnd;
-        while (newRnd===rnd)
-            newRnd = getRndInteger(0,students.length-1);
-        rnd = newRnd;
-        students[rnd].classList.add('randomly-chosen');
-    }).then(()=>sleep(150))
-    .then(()=>{
-        students[rnd].classList.remove('randomly-chosen');
-        let newRnd = rnd;
-        while (newRnd===rnd)
-            newRnd = getRndInteger(0,students.length-1);
-        rnd = newRnd;
-        students[rnd].classList.add('randomly-chosen');
-    }).then(()=>sleep(175))
-    .then(()=>{
-        students[rnd].classList.remove('randomly-chosen');
-        let newRnd = rnd;
-        while (newRnd===rnd)
-            newRnd = getRndInteger(0,students.length-1);
-        rnd = newRnd;
-        students[rnd].classList.add('randomly-chosen');
-    }).then(()=>sleep(200))
-    .then(()=>{
-        students[rnd].classList.remove('randomly-chosen');
-        let newRnd = rnd;
-        while (newRnd===rnd)
-            newRnd = getRndInteger(0,students.length-1);
-        rnd = newRnd;
-        students[rnd].classList.add('randomly-chosen');
-    }).then(()=>sleep(250))
-    .then(()=>{
-        students[rnd].classList.remove('randomly-chosen');
-        let newRnd = rnd;
-        while (newRnd===rnd)
-            newRnd = getRndInteger(0,students.length-1);
-        rnd = newRnd;
-        students[rnd].classList.add('randomly-chosen');
-    }).then(()=>sleep(300))
-    .then(()=>{
-        students[rnd].classList.remove('randomly-chosen');
-        let newRnd = rnd;
-        while (newRnd===rnd)
-            newRnd = getRndInteger(0,students.length-1);
-        rnd = newRnd;
-        students[rnd].classList.add('randomly-chosen');
-    })
-    .then(()=>sleep(5000))
-    .then(()=>{
-        students[rnd].classList.remove('randomly-chosen');
-        rndBtn.removeAttribute('disabled');
-    })
+    students[rnd].scrollIntoView();
+    show_msg('info',`chosen student number ${rnd+1} -> ${Students[rnd].name}`)
 }
 
 window.onbeforeunload = function (e) {

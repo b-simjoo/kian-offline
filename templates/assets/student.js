@@ -5,7 +5,7 @@ function register (){
         document.getElementById('student-code').classList.remove('error');
         console.log(res);
         slide(1)
-        .then(()=>type_text(pre('function','print')+'('+pre('string','"Hello, '+res.name+'"')+')'))
+        .then(()=>type_text(pre('function','print')+'('+pre('string',`"Hello, ${res.name}"`)+')'))
         .then(()=>sleep(2000))
         .then(()=>attendance(stdNum));
     },
@@ -90,63 +90,40 @@ function render_student_info(info){
     document.getElementById('student-name').innerText = info.name;
     document.getElementById('student-number').innerText = info.number;
     document.getElementById('total-score').innerText = info.total_score;
-    let table = document.createElement('table');
-    let thead = document.createElement('thead');
-    let thead_tr = document.createElement('tr');
-    thead.append(thead_tr);
-    table.append(thead);
-    let tbody = document.createElement('tbody');
-    let tbody_tr = document.createElement('tr');
-    tbody.append(tbody_tr);
-    table.append(tbody);
-    info.meetings.forEach(meeting => {
-        let thead_td = document.createElement('td');
-        thead_td.innerText=meeting.date;
-        if (info.current_meeting==meeting.id)
-            thead_td.innerText+='\n(today)'
-        thead_td.setAttribute('colspan',2);
-        thead_tr.prepend(thead_td);
-        let tbody_td = document.createElement('td');
-        tbody_td.id = 'meeting-'+meeting.id.toString();
-        tbody_td.innerHTML='<i class="absent fa-solid fa-circle-xmark"></i>';
-        tbody_tr.prepend(tbody_td);
-        tbody_td = document.createElement('td');
-        tbody_td.id = 'score-'+meeting.id.toString();
-        tbody_td.innerText='-';
-        tbody_tr.prepend(tbody_td);
-    });
-    document.getElementById("student-attendance").append(table);
-    info.attendances.forEach(attendance => {
-        let td = document.getElementById("meeting-"+attendance.meeting.toString());
-        td.innerHTML = '<i class="present fa-solid fa-circle-check"></i>';
-    });
-    info.scores.forEach(score => {
-        let td = document.getElementById("score-"+score.meeting.toString());
-        td.innerText = score.score;
-    });
+    document.getElementById("table-container").replaceChildren(createTable(info))
 }
 
 function createTable(info){
     return table(undefined,
         thead(undefined,
             tr(undefined,
-                info.meetings.map(meeting=>td({id:'meet-'+meeting.id},meeting.date,'<br>',meeting.start_at,'-',meeting.end_at))
+                info.meetings.map(meeting=>{
+                    let meetingTime;
+                    if (!meeting.in_progress) {
+                        let start_at = meeting.start_at.split(':').slice(0, 2).join(':');
+                        let end_at = meeting.end_at!==null? meeting.end_at.split(':').slice(0, 2).join(':'):'N/A';
+                        meetingTime = small({ cls: 'meeting-time' }, start_at, '-', end_at);
+                    } else
+                        meetingTime = small({ cls: 'in-process' }, 'in-process');
+                    let meetingTd = td({ id: 'meet-' + meeting.id, cls: 'meeting' }, meeting.date, '<br>', meetingTime);
+                    meetingTd.setAttribute('colspan', 2);
+                    return meetingTd;
+                })
             )
         ),
         tbody(undefined,
             tr(undefined,
-                info.meetings.map(meeting=>{
-                    let attendance = info.attendances.find(a=>a.meeting.id === meeting.id);
-                    let score = info.scores.find(s=>s.meeting.id === meet.id);
-                    if (typeof(attendance)!=='undefined'){
-                        let elem = td({id:'att-'+attendance.id},
-                            '<i class="present fa-solid fa-circle-check"></i>',
-                            typeof(score) !== 'undefined' ? span({id: 'scr-'+score.id, cls: ['score']},score.score.toString(),' / ',score.full_score.toString()) : ''
-                        );
-                        // TODO: add onhover and onclick actions to elem
-                        return elem;
-                    } else
-                        return td(undefined,'<i class="absent fa-solid fa-circle-xmark"></i>');
+                ...info.meetings.map(meeting=>{
+                    let attendance = info.attendances.find(a=>a.meeting === meeting.id);
+                    let score = info.scores.find(s=>s.meeting === meeting.id);
+                    let score_td = td({ cls: ['score', 'empty'] }, '-');
+                    let attendance_td = td({ cls: 'attendance' }, '<i class="absent fa-solid fa-circle-xmark"></i>');
+                    if (typeof (attendance) !== 'undefined') {
+                        attendance_td = td({ id: 'att-' + attendance.id, cls: 'attendance' }, '<i class="present fa-solid fa-circle-check"></i>');
+                        if (typeof (score) !== 'undefined')
+                            score_td = td({ id: 'scr-' + score.id, cls: 'score' }, score.score.toString(), ' / ', score.full_score.toString());
+                    }
+                    return [attendance_td, score_td];
                 })
             )    
         )
@@ -158,7 +135,8 @@ window.onload = ()=>{
         request('whoami',undefined,undefined,
         (res)=>{
             let stdNum = res.number;
-            type_text(pre('function','print')+'('+pre('string','"Hello, '+res.name+'"')+')')
+            curtain_slide = 1;
+            type_text(pre('function','print')+'('+pre('string',`"Hello, ${res.name}"`)+')')
             .then(()=>sleep(2000))
             .then(()=>attendance(stdNum));
         },
