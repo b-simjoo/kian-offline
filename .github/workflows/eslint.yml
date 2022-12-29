@@ -11,7 +11,9 @@ name: ESLint
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
+      - develop-v1
   pull_request:
     # The branches below must be a subset of the branches above
     branches: [ "main" ]
@@ -33,6 +35,4 @@ jobs:
 
       - name: Run ESLint
         run: npx eslint ./templates/assets/script.js
-          --config .eslintrc.js
           --ext .js,.jsx,.ts,.tsx
-        continue-on-error: true
