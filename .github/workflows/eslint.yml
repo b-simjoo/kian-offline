@@ -29,11 +29,5 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Install ESLint
-        run: |
-          npm install eslint@8.10.0
-          npm init @eslint/config
-          
-      - name: Run ESLint
-        run: npx eslint .
-          --ext .js,.jsx,.ts,.tsx
+      - name: Eslint
+        uses: krizzu/eslint-check-action@v1.1.0
