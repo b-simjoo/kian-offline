@@ -3,7 +3,6 @@ name: Python lint
 on:
   push:
     branches:
-      - main
       - develop-v1
   pull_request:
     # The branches below must be a subset of the branches above
