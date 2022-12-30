@@ -11,16 +11,20 @@ LOGIN_SCHEMA = {
 SCORE_SCHEMA = {
     "type": "object",
     "properties": {
-        "id": {"anyOf": [{"type": "integer", "minimum": 1}, {"type": "null"}]},  # score to edit or add
+        "id": {
+            "anyOf": [{"type": "integer", "minimum": 1}, {"type": "null"}]
+        },  # score to edit or add
         "student": {"type": "integer", "minimum": 1},  # student id
         "score": {"type": "number"},
         "full_score": {
             "type": "number",
             "minimum": 0,
         },
-        "meeting": {"anyOf": [{"type": "integer", "minimum": 1}, {"type": "null"}]},  # meeting id
+        "meeting": {
+            "anyOf": [{"type": "integer", "minimum": 1}, {"type": "null"}]
+        },  # meeting id
         "reason": {"type": ["string", "null"]},
     },
     "additionalProperties": False,
-    "required": ["student", "score", "full_score", "meeting", "reason"],
+    "required": ["student", "score"],
 }

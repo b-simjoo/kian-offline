@@ -90,7 +90,9 @@ def bad_request(error):
 
 @app.route("/")
 def index():
-    return render_template("students.html", registered=(session["device"].student is not None))
+    return render_template(
+        "students.html", registered=(session["device"].student is not None)
+    )
 
 
 # An easter-egg for my students!
@@ -118,7 +120,8 @@ def register_device():
         return (
             jsonify(
                 name=student.name,
-                info="device is already register, new registration is forbidden." + EASTER_EGG,
+                info="device is already register, new registration is forbidden."
+                + EASTER_EGG,
             ),
             403,
         )
@@ -146,19 +149,13 @@ def attendance():
             res = {}
             if query.count() != 0:
                 code = 203
-                res["info"] = "Your presence is already registered." + EASTER_EGG
             else:
-                Attendance.create(student=student, device=device, meeting=g.meeting).save()
+                Attendance.create(
+                    student=student, device=device, meeting=g.meeting
+                ).save()
             res = {
-                "name": student.name,
-                "number": student.number,
-                "attendances": list(student.attendances.dicts()),
-                "scores": list(student.scores.dicts()),
+                "student": student.to_dict(max_depth=1),
                 "meetings": list(Meeting.select().dicts()),
-                "devices": list(d.to_dict(recurse=False) for d in student.devices),
-                "current_meeting": g.meeting.id,
-                "total_score": student.total_score,
-                "total_full_score": student.total_full_score,
             }
             return jsonify(res), code
         else:  # user has not registered yet
@@ -182,7 +179,7 @@ def login():
         if request.remote_addr not in ["localhost", "127.0.0.1"]:
             return redirect("/")
     if session.get("admin"):
-        return jsonify(logged_in=True)
+        return jsonify()
     if session.get("tries_left", 5) > 0:
         username = g.data["username"]
         password = g.data["password"]
@@ -193,12 +190,14 @@ def login():
             ):
                 session["admin"] = True
                 session["tries_left"] = 5
-                return jsonify(logged_in=True)
+                return jsonify()
         session["tries_left"] = session.get("tries_left", 5) - 1
         if session["tries_left"] == 0:
             return jsonify(info="login failed, you got banned." + EASTER_EGG), 403
         return (
-            jsonify(tries_left=session["tries_left"], info="login failed." + EASTER_EGG),
+            jsonify(
+                tries_left=session["tries_left"], info="login failed." + EASTER_EGG
+            ),
             401,
         )
     else:
@@ -221,31 +220,11 @@ def login_required(func):
         if config.get("admin from localhost", True):
             if request.remote_addr not in ["localhost", "127.0.0.1"]:
                 return redirect("/")
-        if app.debug or session.get("admin"):
+        if session.get("admin"):
             return func(*args, **kw)
         return redirect(url_for("login"))
 
     return wrapper
-
-
-@app.route("/api/v1/students", methods=["POST"])
-@login_required
-def set_students():
-    if file := request.files.get("file"):
-        if file.filename:
-            if file.filename.rsplit(".", 1)[1] == "xlsx":
-                with NamedTemporaryFile("r+b") as tmp:
-                    file.save(tmp)
-                    tmp.seek(0)
-                    wb = load_workbook(tmp.name)
-                    ws = wb.active
-                    for row in ws.iter_rows(max_col=2):
-                        std = Student(number=row[0].value, name=row[1].value)
-                        std.save()
-                    return redirect(url_for("admin"))
-            else:
-                return jsonify(info="bad file format")
-    abort(400)
 
 
 @app.route("/api/v1/students")
@@ -254,14 +233,18 @@ def get_students():
     return jsonify([std.to_dict(max_depth=1) for std in Student.select()])
 
 
-@app.route("/api/v1/students/<int:number>")
-def get_student(number):
-    if session.get("admin") or ((std := session.get("student")) and std.id == number):
-        if (student := Student.get_or_none(Student.id == number)) is not None:  # type: ignore
-            return jsonify(student.to_dict())  # type: ignore
+@app.route("/api/v1/students/<int:student_id>")
+def get_student(student_id):
+    if session.get("admin") or (
+        (std := session.get("student")) and std.id == student_id
+    ):
+        if (student := Student.get_or_none(Student.id == student_id)) is not None:  # type: ignore
+            return jsonify(student.to_dict(max_depth=1))  # type: ignore
         abort(404)
     return (
-        jsonify(info="You're not authorized, get your info or login as admin!" + EASTER_EGG),
+        jsonify(
+            info="You're not authorized, get your info or login as admin!" + EASTER_EGG
+        ),
         401,
     )
 
@@ -269,20 +252,26 @@ def get_student(number):
 @app.route("/api/v1/attendances")
 @login_required
 def get_attendances():
-    return jsonify([a.to_dict() for a in Attendance.select()])
+    return jsonify([a.to_dict(max_depth=1) for a in Attendance.select()])
 
 
 @app.route("/api/v1/attendances/<int:attendance_id>")
 def get_attendance(attendance_id):
     if session.get("admin") or (
-        (std := session.get("student")) and
-        std.attendances.select(Attendance.id == attendance_id).count() == 1  # type:ignore
+        (std := session.get("student"))
+        and std.attendances.select(
+            Attendance.id == attendance_id  # type:ignore
+        ).count()
+        == 1
     ):
         if (a := Attendance.get_or_none(Attendance.id == attendance_id)) is not None:  # type: ignore
-            return jsonify(a.to_dict())
+            return jsonify(a.to_dict(max_depth=1))
         abort(404)
     return (
-        jsonify(info="You're not authorized, get your attendance info or login as admin!" + EASTER_EGG),
+        jsonify(
+            info="You're not authorized, get your attendance info or login as admin!"
+            + EASTER_EGG
+        ),
         401,
     )
 
@@ -290,7 +279,7 @@ def get_attendance(attendance_id):
 @app.route("/api/v1/devices")
 @login_required
 def get_devices():
-    return jsonify([device.to_dict(backrefs=True) for device in Device.select()])
+    return jsonify([device.to_dict(max_depth=1) for device in Device.select()])
 
 
 @app.route("/api/v1/devices/<int:device_id>")
@@ -299,10 +288,13 @@ def get_device(device_id):
         (std := session.get("student")) and std.devices.select(Device.id == device_id).count() == 1  # type: ignore
     ):
         if (device := Device.get_or_none(Device.id == device_id)) is not None:  # type: ignore
-            return jsonify(device.to_dict(backrefs=True))
+            return jsonify(device.to_dict(max_depth=1))
         abort(404)
     return (
-        jsonify(info="You're not authorized, get your device or login as admin!" + EASTER_EGG),
+        jsonify(
+            info="You're not authorized, get your device or login as admin!"
+            + EASTER_EGG
+        ),
         401,
     )
 
@@ -311,7 +303,7 @@ def get_device(device_id):
 @login_required
 def get_current_meeting():
     if g.meeting is not None and g.meeting.in_progress:
-        return jsonify(g.meeting.to_dict())
+        return jsonify(g.meeting.to_dict(max_depth=1))
     return jsonify(info="no in progress meeting"), 404
 
 
@@ -323,8 +315,8 @@ def start_meeting():
     else:
         return jsonify(info="a meeting is already in progress"), 202
     if g.meeting.save() == 1:
-        return jsonify(g.meeting.to_dict())
-    return jsonify(done=False, info="Unknown error while creating database record"), 500
+        return jsonify(g.meeting.to_dict(max_depth=1))
+    return jsonify(info="Unknown error while creating database record"), 500
 
 
 @app.route("/api/v1/current_meeting", methods=["DEL"])
@@ -333,35 +325,37 @@ def end_current_meeting():
     if g.meeting is not None and g.meeting.in_progress:
         g.meeting.in_progress = False
         g.meeting.end_at = datetime.now().time()
-        g.meeting.save()
-        return jsonify(g.meeting.to_dict())
+        if g.meeting.save():
+            return jsonify(g.meeting.to_dict(max_depth=1))
+        return jsonify(info="Unknown error while saving database record"), 500
     return jsonify(info="no in progress meeting"), 404
 
 
 @app.route("/api/v1/meetings")
 @login_required
 def get_meetings():
-    return jsonify([meeting.to_dict(backrefs=False) for meeting in Meeting.select()])
+    return jsonify([meeting.to_dict(max_depth=1) for meeting in Meeting.select()])
 
 
 @app.route("/api/v1/meetings/<int:meeting_id>")
 @login_required
 def get_meeting(meeting_id: int):
     if (meet := Meeting.get_or_none(Meeting.id == meeting_id)) is not None:  # type: ignore
-        return jsonify(meet.to_dict(backrefs=True))
+        return jsonify(meet.to_dict(max_depth=1))
     abort(404)
 
 
-@app.route("/api/v1/meetings/<int:meeting_id>", methods=["DEL"])
-@login_required
-def del_meetings(meeting_id: int):
-    if (meet := Meeting.get_or_none(Meeting.id == meeting_id)) is not None:  # type: ignore
-        if (rows := meet.delete_instance(True)) > 0:
-            if meet == g.meeting:
-                g.meeting = None
-            return jsonify(rows=rows)
-        return jsonify(info="didn't deleted any row"), 500
-    abort(404)
+# TODO: add delete meeting feature. this method didn't used in front-end
+# @app.route("/api/v1/meetings/<int:meeting_id>", methods=["DEL"])
+# @login_required
+# def del_meetings(meeting_id: int):
+#     if (meet := Meeting.get_or_none(Meeting.id == meeting_id)) is not None:  # type: ignore
+#         if (rows := meet.delete_instance(True)) > 0:
+#             if meet == g.meeting:
+#                 g.meeting = None
+#             return jsonify(rows=rows)
+#         return jsonify(info="didn't deleted any row"), 500
+#     abort(404)
 
 
 @app.route("/api/v1/score", methods=["POST"])
@@ -370,21 +364,21 @@ def del_meetings(meeting_id: int):
 def add_edit_score():
     try:
         student = Student.get_by_id(g.data["student"])
-        meeting = g.data["meeting"] and Meeting.get_by_id(g.data["meeting"])
-        score = g.data["id"] and Score.get_by_id(g.data["id"])
+        meeting = g.data.get("meeting") and Meeting.get_by_id(g.data["meeting"])
+        score = g.data.get("id") and Score.get_by_id(g.data["id"])
     except DoesNotExist:
         abort(404)
     if score:
         score.score = g.data["score"]
-        score.full_score = g.data["full_score"]
-        score.reason = g.data["reason"]
+        score.full_score = g.data.get("full_score", 0)
+        score.reason = g.data.get("reason")
     else:
         score = Score.create(
             student=student,
             score=g.data["score"],
-            full_score=g.data["full_score"],
+            full_score=g.data.get("full_score", 0),
             meeting=meeting,
-            reason=g.data["reason"],
+            reason=g.data.get("reason"),
         )
     res = score.save()
-    return jsonify(done=res == 1), 200 if res == 1 else 500
+    return jsonify(score.to_dict()), 200 if res == 1 else 500
