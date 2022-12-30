@@ -365,7 +365,7 @@ table {
     border-spacing: 0;
 }
 
-.admin-panel thead tr td{
+#admin-panel thead tr td{
     position: sticky;
     top:0;
     background-color: var(--light-bg);
@@ -376,12 +376,12 @@ thead tr td{
     background-color: var(--light-bg);
 }
 
-.admin-panel thead tr td:nth-of-type(2){
+#admin-panel thead tr td:nth-of-type(2){
     left:0;
     z-index: 3;
 }
 
-.admin-panel tbody tr td:nth-of-type(2){
+#admin-panel tbody tr td:nth-of-type(2){
     position: sticky;
     left:0;
     z-index: 1;

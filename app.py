@@ -144,7 +144,8 @@ def admin():
             return redirect('/')
     return render_template('admin.html',admin=session.get('admin',False))
     
-@app.route('/login', methods=['POST'])
+@app.route('/api/v1/login', methods=['POST'])
+@expects_json(LOGIN_SCHEMA)
 def login():
     if config.get('admin from localhost',True):
         if request.remote_addr not in ['localhost','127.0.0.1']:
@@ -152,8 +153,8 @@ def login():
     if session.get('admin'):
         return jsonify(logged_in=True)
     if session.get('tries_left',5) > 0:
-        username = request.form.get('username',type=str)
-        password = request.form.get('password',type=str)
+        username = g.data['username']
+        password = g.data['password']
         if username and password:
             if (config['admin username'],config['admin password']) == (username, password):
                 session['admin'] = True

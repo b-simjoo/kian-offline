@@ -1,13 +1,9 @@
 var meetingInProgress = false;
 function login(e) {
     e.preventDefault();
-    const formData = new FormData(e.target);
-    const req = new XMLHttpRequest();
-    req.open("POST", "login", true);
-    req.responseType = 'json';
-    req.onload = (p) => {
-        if (req.status === 200) {
-            show_msg('success', 'Welcome to admin panel')
+    request('login',undefined,'POST',
+        res=>{
+            show_msg('success', 'Welcome to admin panel');
             loadView('admin-panel');
             request('current_meeting',undefined,undefined,res=>{
                 let startBtn = document.getElementById('start-meeting-btn');
@@ -20,26 +16,34 @@ function login(e) {
                 404:()=>{}
             });
             renderTable();
-        } else if (req.status === 401) {
-            show_msg('error', 'Access denied, ' + req.response.tries_left + ' try left.');
-        } else if (req.status === 403) {
-            show_msg('error', 'You are banned, You can not login anymore');
+        },{
+            401:()=>{show_msg('error', 'Access denied, ' + req.response.tries_left + ' try left.');},
+            403:()=>{show_msg('error', 'You are banned, You can not login anymore');}
+        },{
+            username:e.currentTarget.username.value,
+            password:e.currentTarget.password.value
         }
-    }
-    req.send(formData);
+    )
+    return false;
 }
 
 var Meetings, Students;
 function renderTable() {
+    let studentsTable = document.getElementById('students-table');
+    if (studentsTable){
+        animate(studentsTable,'fade','out').then(()=>{
+            document.getElementById('students-info').innerHTML='<h1 class="spinner middle center inline"></h1>';
+        })
+    }
     request('meetings', undefined, undefined, (meetings) => {
         Meetings = meetings;
         request('students', undefined, undefined, (students) => {
             if (students.length > 0) {
                 Students = students;
                 const studentsTable = createTable(meetings, students);
-                document.getElementById('students-table').replaceChildren(div({id:"table-container", cls: ['block', 'center']},studentsTable));
+                document.getElementById('students-info').replaceChildren(div({id:"table-container", cls: ['block', 'center']},studentsTable));
             } else {
-                document.getElementById('students-table').replaceChildren(div({ cls: ['middle', 'center', 'block'] },
+                document.getElementById('students-info').replaceChildren(div({ cls: ['middle', 'center', 'block'] },
                     p(undefined,'Your class is empty!'),
                     small(undefined, 'to add students shutdown server, go to app root and<br>run <code>python worksheetUtil.py load &lt;yourfile&gt;</code> and<br>then restart the server, <a href="https://github.com/bsimjoo-official/kian">more info</a>')      // TODO: add document for this
                 ));
