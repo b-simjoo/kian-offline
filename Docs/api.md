@@ -16,7 +16,7 @@ For each request there are **parameters**, **successful response(s)** and **erro
 
 <details>
 
-<summary><h3><code>GET</code> <code>/register</code> <i>(register a student number)</i><h3></summary>
+<summary><h3>:green_circle: <code>GET</code> <code>/register</code> <i>(register a student number)</i><h3></summary>
 
 Server will save student code and mac address in database.
 
@@ -42,10 +42,12 @@ Server will save student code and mac address in database.
 |404      |student not found|
 |400      |`std_num` didn't sent|
 |403      |Already registered; user can not register multiple times (see [why?](https://github.com/bsimjoo-official/kian#why-does-this-app-uses-an-access-point))|
+
+<hr>
 </details>
 
 <details>
-<summary><h3><code>GET</code> <code>/whoami</code> <i>(if user is registered get name and number)</i></summary>
+<summary><h3>:green_circle: <code>GET</code> <code>/whoami</code> <i>(if user is registered get name and number)</i></summary>
 
 it is recommended to use this endpoint to check if student is logged in or not. then show login for or send attendance request.
 
@@ -69,10 +71,11 @@ it is recommended to use this endpoint to check if student is logged in or not. 
 |---------|-----------|
 |400      |student is not registered|
 
+<hr>
 </details>
 
 <details>
-<summary><h3><code>GET</code> <code>/attendance</code> <i>(register a student presence and return student data)</i><h3></summary>
+<summary><h3>:green_circle: <code>GET</code> <code>/attendance</code> <i>(register a student presence and return student data)</i><h3></summary>
 
 This endpoint register student's present and returns all data that is needed to render a table for student.
 
@@ -95,10 +98,12 @@ This endpoint register student's present and returns all data that is needed to 
 |---------|-----------|
 |403      |student is not registered|
 |404      |the meeting did not started yet.|
+  
+<hr>
 </details>
 
 <details>
-<summary><h3><code>GET</code> <code>/can_login</code> <i>(check ability for logging in as admin)</i></summary>
+<summary><h3>:green_circle: <code>GET</code> <code>/can_login</code> <i>(check ability for logging in as admin)</i></summary>
 
 This endpoint will check that the client is able to try to login as admin or not. teacher can config server to
 only allow client from localhost for login. Also client may use this endpoint to check that client is banned or not.
@@ -122,10 +127,12 @@ only allow client from localhost for login. Also client may use this endpoint to
 |http code|description|
 |---------|-----------|
 |403      |if `banned=true` the client is banned. if `can_login=false` not local users can not login|
+  
+<hr>
 </details>
 
 <details>
-<summary><h3><code>POST</code> <code>/login</code> <i>(Login teacher to admin panel)</i></summary>
+<summary><h3>:orange_circle: <code>POST</code> <code>/login</code> <i>(Login teacher to admin panel)</i></summary>
 
 #### Request
 > *content-type: `application/json`*
@@ -153,10 +160,12 @@ only allow client from localhost for login. Also client may use this endpoint to
 |---------|-----------|
 |403      |Access denied you got banned|
 |401      |Username and/or password are incorrect|
+  
+<hr>
 </details>
 
 <details>
-<summary><h3><code>GET</code> <code>/students</code> <i>(get all students info)<sup>[login required]</sup></i></summary>
+<summary><h3>:green_circle: <code>GET</code> <code>/students</code> <i>(get all students info)<sup>[login required]</sup></i></summary>
 
 This endpoint will return an `Array` of [`Student` object](#student-object).
 
@@ -169,10 +178,12 @@ This endpoint will return an `Array` of [`Student` object](#student-object).
 > *content-type: `application/json`*
 
 > `array[[Student](#student-object)]`
+  
+<hr>
 </details>
 
 <details>
-<summary><h3><code>GET</code> <code>/students/&lt;student id&gt;</code> <i>(get a Student object with id)</i></summary>
+<summary><h3>:green_circle: <code>GET</code> <code>/students/&lt;student id&gt;</code> <i>(get a Student object with id)</i></summary>
 
 This endpoint will return a [`Student` object](#student-object).
 
@@ -193,10 +204,12 @@ This endpoint will return a [`Student` object](#student-object).
 |---------|-----------|
 |401      |Access denied|
 |404      |Student not found|
+  
+<hr>
 </details>
 
 <details>
-<summary><h3><code>GET</code> <code>/attendances</code> <i>(get all Attendances)<sup>[login required]</sup></i></summary>
+<summary><h3>:green_circle: <code>GET</code> <code>/attendances</code> <i>(get all Attendances)<sup>[login required]</sup></i></summary>
 
 This endpoint will return an Array of [`Attendance` object](#attendance-object).
 
@@ -209,10 +222,12 @@ This endpoint will return an Array of [`Attendance` object](#attendance-object).
 > *content-type: `application/json`*
 
 > `Array[[Attendance](#attendance-object)]`
+  
+<hr>
 </details>
 
 <details>
-<summary><h3><code>GET</code> <code>/attendances/&lt;attendance id&gt;</code> <i>(get an Attendance object with id)</i></summary>
+<summary><h3>:green_circle: <code>GET</code> <code>/attendances/&lt;attendance id&gt;</code> <i>(get an Attendance object with id)</i></summary>
 
 This endpoint will return an [`Attendance` object](#attendance-object).
 
@@ -233,10 +248,12 @@ This endpoint will return an [`Attendance` object](#attendance-object).
 |---------|-----------|
 |401      |Access denied|
 |404      |Attendance not found|
+  
+<hr>
 </details>
 
 <details>
-<summary><h3><code>GET</code> <code>/devices</code> <i>(get all Devices)<sup>[login required]</sup></i></summary>
+<summary><h3>:green_circle: <code>GET</code> <code>/devices</code> <i>(get all Devices)<sup>[login required]</sup></i></summary>
 
 This endpoint will return an Array of [`Device` object](#device-object).
 
@@ -249,10 +266,12 @@ This endpoint will return an Array of [`Device` object](#device-object).
 > *content-type: `application/json`*
 
 > `Array[[Device](#device-object)]`
+  
+<hr>
 </details>
 
 <details>
-<summary><h3><code>GET</code> <code>/devices/&lt;device id&gt;</code> <i>(get a Device object with id)</i></summary>
+<summary><h3>:green_circle: <code>GET</code> <code>/devices/&lt;device id&gt;</code> <i>(get a Device object with id)</i></summary>
 
 This endpoint will return a [`Device` object](#device-object).
 
@@ -273,10 +292,12 @@ This endpoint will return a [`Device` object](#device-object).
 |---------|-----------|
 |401      |Access denied|
 |404      |Device not found|
+  
+<hr>
 </details>
 
 <details>
-<summary><h3><code>GET</code> <code>/meetings</code> <i>(get all meetings)<sup>[login required]</sup></i></summary>
+<summary><h3>:green_circle: <code>GET</code> <code>/meetings</code> <i>(get all meetings)<sup>[login required]</sup></i></summary>
 
 This endpoint will return an Array of [`Meeting` object](#meeting-object).
 
@@ -289,10 +310,12 @@ This endpoint will return an Array of [`Meeting` object](#meeting-object).
 > *content-type: `application/json`*
 
 > `Array[[Meeting](#meeting-object)]`
+  
+<hr>
 </details>
 
 <details>
-<summary><h3><code>GET</code> <code>/meetings/&lt;meeting id&gt;</code> <i>(get a Meeting object with id)</i></summary>
+<summary><h3>:green_circle: <code>GET</code> <code>/meetings/&lt;meeting id&gt;</code> <i>(get a Meeting object with id)</i></summary>
 
 This endpoint will return a [`Meeting` object](#meeting-object).
 
@@ -312,10 +335,12 @@ This endpoint will return a [`Meeting` object](#meeting-object).
 |http code|description|
 |---------|-----------|
 |404      |Meeting not found|
+  
+<hr>
 </details>
 
 <details>
-<summary><h3><code>GET</code> <code>/current_meeting</code> <i>(get current in progress meeting)<sup>[login required]</sup></i></summary>
+<summary><h3>:green_circle: <code>GET</code> <code>/current_meeting</code> <i>(get current in progress meeting)<sup>[login required]</sup></i></summary>
 
 This endpoint will return a [`Meeting` object](#meeting-object) if there is a meeting in progress.
 
@@ -335,10 +360,12 @@ This endpoint will return a [`Meeting` object](#meeting-object) if there is a me
 |http code|description|
 |---------|-----------|
 |404      |No meeting is in progress|
+  
+<hr>
 </details>
 
 <details>
-<summary><h3><code>POST</code> <code>/current_meeting</code> <i>(Start a new meeting)<sup>[login required]</sup></i></summary>
+<summary><h3>:orange_circle: <code>POST</code> <code>/current_meeting</code> <i>(Start a new meeting)<sup>[login required]</sup></i></summary>
 
 This endpoint will starts a new Meeting.
 
@@ -358,10 +385,12 @@ This endpoint will starts a new Meeting.
 |http code|description|
 |---------|-----------|
 |500      |Unknown error while creating database record|
+  
+<hr>
 </details>
 
 <details>
-<summary><h3><code>DEL</code> <code>/current_meeting</code> <i>(end current in progress meeting)<sup>[login required]</sup></i></summary>
+<summary><h3>:red_circle: <code>DEL</code> <code>/current_meeting</code> <i>(end current in progress meeting)<sup>[login required]</sup></i></summary>
 
 This endpoint will return a [`Meeting` object](#meeting-object) if there was a meeting in progress.
 
@@ -382,10 +411,12 @@ This endpoint will return a [`Meeting` object](#meeting-object) if there was a m
 |---------|-----------|
 |404      |No meeting is in progress|
 |500      |Unknown error while saving database record|
+  
+<hr>
 </details>
 
 <details>
-<summary><h3><code>POST</code> <code>/score</code> <i>(add a new score for a student)<sup>[login required]</sup></i></summary>
+<summary><h3>:orange_circle: <code>POST</code> <code>/score</code> <i>(add a new score for a student)<sup>[login required]</sup></i></summary>
 
 #### Request
 > *content-type: `application/json`*
@@ -411,6 +442,8 @@ This endpoint will return a [`Meeting` object](#meeting-object) if there was a m
 |http code|description|
 |---------|-----------|
 |500      |Unknown error while creating database record|
+  
+<hr>
 </details>
 
 ## Objects
