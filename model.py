@@ -12,7 +12,7 @@ from peewee import (
     TimeField,
 )
 from datetime import datetime
-from playhouse.shortcuts import model_to_dict, dict_to_model
+from playhouse.shortcuts import model_to_dict
 
 config: dict = load(open("config.json", "r"))
 

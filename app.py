@@ -275,8 +275,9 @@ def get_attendances():
 @app.route("/api/v1/attendances/<int:attendance_id>")
 def get_attendance(attendance_id):
     if session.get("admin") or (
-        (std := session.get("student")) and std.attendances.select(Attendance.id == attendance_id).count() == 1
-    ):  # type:ignore
+        (std := session.get("student")) and
+        std.attendances.select(Attendance.id == attendance_id).count() == 1  # type:ignore
+    ):
         if (a := Attendance.get_or_none(Attendance.id == attendance_id)) is not None:  # type: ignore
             return jsonify(a.to_dict())
         abort(404)
@@ -295,8 +296,8 @@ def get_devices():
 @app.route("/api/v1/devices/<int:device_id>")
 def get_device(device_id):
     if session.get("admin") or (
-        (std := session.get("student")) and std.devices.select(Device.id == device_id).count() == 1
-    ):  # type: ignore
+        (std := session.get("student")) and std.devices.select(Device.id == device_id).count() == 1  # type: ignore
+    ):
         if (device := Device.get_or_none(Device.id == device_id)) is not None:  # type: ignore
             return jsonify(device.to_dict(backrefs=True))
         abort(404)
