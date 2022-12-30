@@ -56,8 +56,7 @@ def _before_request():
         g.db.connect()
 
     if "meeting" not in g:
-        g.meeting = Meeting.get_or_none(
-            Meeting.in_progress == True)    # noqa: E712
+        g.meeting = Meeting.get_or_none(Meeting.in_progress == True)  # noqa: E712
 
     if session.get("mac") is None:
         if request.remote_addr in ("localhost", "127.0.0.1"):
@@ -91,14 +90,11 @@ def bad_request(error):
 
 @app.route("/")
 def index():
-    return render_template(
-        "students.html", registered=(session["device"].student is not None)
-    )
+    return render_template("students.html", registered=(session["device"].student is not None))
 
 
 # An easter-egg for my students!
-EASTER_EGG = " EASTER EGG: I'm so happy that you are reading this! "\
-    "good luck and hack the planet! BSimjoo ;-)"
+EASTER_EGG = " EASTER EGG: I'm so happy that you are reading this! good luck and hack the planet! BSimjoo ;-)"
 
 
 @app.route("/api/v1/register")
@@ -122,8 +118,7 @@ def register_device():
         return (
             jsonify(
                 name=student.name,
-                info="device is already register, new registration is forbidden."
-                + EASTER_EGG,
+                info="device is already register, new registration is forbidden." + EASTER_EGG,
             ),
             403,
         )
@@ -153,9 +148,7 @@ def attendance():
                 code = 203
                 res["info"] = "Your presence is already registered." + EASTER_EGG
             else:
-                Attendance.create(
-                    student=student, device=device, meeting=g.meeting
-                ).save()
+                Attendance.create(student=student, device=device, meeting=g.meeting).save()
             res = {
                 "name": student.name,
                 "number": student.number,
@@ -205,9 +198,7 @@ def login():
         if session["tries_left"] == 0:
             return jsonify(info="login failed, you got banned." + EASTER_EGG), 403
         return (
-            jsonify(
-                tries_left=session["tries_left"], info="login failed." + EASTER_EGG
-            ),
+            jsonify(tries_left=session["tries_left"], info="login failed." + EASTER_EGG),
             401,
         )
     else:
@@ -270,9 +261,7 @@ def get_student(number):
             return jsonify(student.to_dict())  # type: ignore
         abort(404)
     return (
-        jsonify(
-            info="You're not authorized, get your info or login as admin!" + EASTER_EGG
-        ),
+        jsonify(info="You're not authorized, get your info or login as admin!" + EASTER_EGG),
         401,
     )
 
@@ -285,17 +274,14 @@ def get_attendances():
 
 @app.route("/api/v1/attendances/<int:attendance_id>")
 def get_attendance(attendance_id):
-    if (session.get("admin") or
-        ((std := session.get("student")) and
-         std.attendances.select(Attendance.id == attendance_id).count() == 1)):        # type:ignore
+    if session.get("admin") or (
+        (std := session.get("student")) and std.attendances.select(Attendance.id == attendance_id).count() == 1
+    ):  # type:ignore
         if (a := Attendance.get_or_none(Attendance.id == attendance_id)) is not None:  # type: ignore
             return jsonify(a.to_dict())
         abort(404)
     return (
-        jsonify(
-            info="You're not authorized, get your attendance info or login as admin!"
-            + EASTER_EGG
-        ),
+        jsonify(info="You're not authorized, get your attendance info or login as admin!" + EASTER_EGG),
         401,
     )
 
@@ -308,17 +294,14 @@ def get_devices():
 
 @app.route("/api/v1/devices/<int:device_id>")
 def get_device(device_id):
-    if (session.get("admin") or
-        ((std := session.get("student")) and
-         std.devices.select(Device.id == device_id).count() == 1)):  # type: ignore
+    if session.get("admin") or (
+        (std := session.get("student")) and std.devices.select(Device.id == device_id).count() == 1
+    ):  # type: ignore
         if (device := Device.get_or_none(Device.id == device_id)) is not None:  # type: ignore
             return jsonify(device.to_dict(backrefs=True))
         abort(404)
     return (
-        jsonify(
-            info="You're not authorized, get your device or login as admin!"
-            + EASTER_EGG
-        ),
+        jsonify(info="You're not authorized, get your device or login as admin!" + EASTER_EGG),
         401,
     )
 
