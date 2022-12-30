@@ -11,7 +11,7 @@ For each request there are **parameters**, **successful response(s)** and **erro
 > Endpoints with <sup>[login required]</sup> tag will redirect user to `/admin` if user didn't logged in.
 
 > **Note**
-> Students can get only `objects` (like `Attendance` object, `Device` object) that are related to their-self.
+> Students only can get objects that are related to their-self (like [`Attendance` object](#attendance-object), [`Device` object](#device-object)).
 > But they can't get any `Meeting` object from `/meetings/*` or `/current_meeting`. Admin has access to all objects
 
 <details>
@@ -158,7 +158,7 @@ only allow client from localhost for login. Also client may use this endpoint to
 <details>
 <summary><h3><code>GET</code> <code>/students</code> <i>(get all students info)<sup>[login required]</sup></i></summary>
 
-This endpoint will return an `Array` of [`Student` object](#student_object).
+This endpoint will return an `Array` of [`Student` object](#student-object).
 
 #### Parameters
 > None
@@ -168,13 +168,13 @@ This endpoint will return an `Array` of [`Student` object](#student_object).
 >
 > *content-type: `application/json`*
 
-> `array[[Student](#student_object)]`
+> `array[[Student](#student-object)]`
 </details>
 
 <details>
 <summary><h3><code>GET</code> <code>/students/&lt;student id&gt;</code> <i>(get a Student object with id)</i></summary>
 
-This endpoint will return a [`Student` object](#student_object).
+This endpoint will return a [`Student` object](#student-object).
 
 #### Parameters
 > None
@@ -184,7 +184,7 @@ This endpoint will return a [`Student` object](#student_object).
 >
 > *content-type: `application/json`*
 
-> [`Student` object](#student_object)
+> [`Student` object](#student-object)
 
 #### Error responses
 > *content-type: `application/json`*
@@ -198,7 +198,7 @@ This endpoint will return a [`Student` object](#student_object).
 <details>
 <summary><h3><code>GET</code> <code>/attendances</code> <i>(get all Attendances)<sup>[login required]</sup></i></summary>
 
-This endpoint will return an Array of [`Attendance` object](#attendance_object).
+This endpoint will return an Array of [`Attendance` object](#attendance-object).
 
 #### Parameters
 > None
@@ -208,13 +208,13 @@ This endpoint will return an Array of [`Attendance` object](#attendance_object).
 >
 > *content-type: `application/json`*
 
-> `Array[[Attendance](#attendance_object)]`
+> `Array[[Attendance](#attendance-object)]`
 </details>
 
 <details>
 <summary><h3><code>GET</code> <code>/attendances/&lt;attendance id&gt;</code> <i>(get an Attendance object with id)</i></summary>
 
-This endpoint will return an [`Attendance` object](#attendance_object).
+This endpoint will return an [`Attendance` object](#attendance-object).
 
 #### Parameters
 > None
@@ -224,7 +224,7 @@ This endpoint will return an [`Attendance` object](#attendance_object).
 >
 > *content-type: `application/json`*
 
-> [`Attendance` object](#attendance_object)
+> [`Attendance` object](#attendance-object)
 
 #### Error responses
 > *content-type: `application/json`*
@@ -238,7 +238,7 @@ This endpoint will return an [`Attendance` object](#attendance_object).
 <details>
 <summary><h3><code>GET</code> <code>/devices</code> <i>(get all Devices)<sup>[login required]</sup></i></summary>
 
-This endpoint will return an Array of [`Device` object](#device_object).
+This endpoint will return an Array of [`Device` object](#device-object).
 
 #### Parameters
 > None
@@ -248,13 +248,13 @@ This endpoint will return an Array of [`Device` object](#device_object).
 >
 > *content-type: `application/json`*
 
-> `Array[[Device](#device_object)]`
+> `Array[[Device](#device-object)]`
 </details>
 
 <details>
 <summary><h3><code>GET</code> <code>/devices/&lt;device id&gt;</code> <i>(get a Device object with id)</i></summary>
 
-This endpoint will return a [`Device` object](#device_object).
+This endpoint will return a [`Device` object](#device-object).
 
 #### Parameters
 > None
@@ -264,7 +264,7 @@ This endpoint will return a [`Device` object](#device_object).
 >
 > *content-type: `application/json`*
 
-> [`Device` object](#device_object)
+> [`Device` object](#device-object)
 
 #### Error responses
 > *content-type: `application/json`*
@@ -278,7 +278,7 @@ This endpoint will return a [`Device` object](#device_object).
 <details>
 <summary><h3><code>GET</code> <code>/meetings</code> <i>(get all meetings)<sup>[login required]</sup></i></summary>
 
-This endpoint will return an Array of [`Meeting` object](#meeting_object).
+This endpoint will return an Array of [`Meeting` object](#meeting-object).
 
 #### Parameters
 > None
@@ -288,13 +288,13 @@ This endpoint will return an Array of [`Meeting` object](#meeting_object).
 >
 > *content-type: `application/json`*
 
-> `Array[[Meeting](#meeting_object)]`
+> `Array[[Meeting](#meeting-object)]`
 </details>
 
 <details>
 <summary><h3><code>GET</code> <code>/meetings/&lt;meeting id&gt;</code> <i>(get a Meeting object with id)</i></summary>
 
-This endpoint will return a [`Meeting` object](#meeting_object).
+This endpoint will return a [`Meeting` object](#meeting-object).
 
 #### Parameters
 > None
@@ -304,7 +304,7 @@ This endpoint will return a [`Meeting` object](#meeting_object).
 >
 > *content-type: `application/json`*
 
-> [`Meeting` object](#meeting_object)
+> [`Meeting` object](#meeting-object)
 
 #### Error responses
 > *content-type: `application/json`*
@@ -317,7 +317,7 @@ This endpoint will return a [`Meeting` object](#meeting_object).
 <details>
 <summary><h3><code>GET</code> <code>/current_meeting</code> <i>(get current in progress meeting)<sup>[login required]</sup></i></summary>
 
-This endpoint will return a [`Meeting` object](#meeting_object) if there is a meeting in progress.
+This endpoint will return a [`Meeting` object](#meeting-object) if there is a meeting in progress.
 
 #### Parameters
 > None
@@ -327,7 +327,7 @@ This endpoint will return a [`Meeting` object](#meeting_object) if there is a me
 >
 > *content-type: `application/json`*
 
-> [`Meeting` object](#meeting_object)
+> [`Meeting` object](#meeting-object)
 
 #### Error responses
 > *content-type: `application/json`*
@@ -350,7 +350,7 @@ This endpoint will starts a new Meeting.
 >
 > *content-type: `application/json`*
 
-> [`Meeting` object](#meeting_object)
+> [`Meeting` object](#meeting-object)
 
 #### Error responses
 > *content-type: `application/json`*
@@ -363,7 +363,7 @@ This endpoint will starts a new Meeting.
 <details>
 <summary><h3><code>DEL</code> <code>/current_meeting</code> <i>(end current in progress meeting)<sup>[login required]</sup></i></summary>
 
-This endpoint will return a [`Meeting` object](#meeting_object) if there was a meeting in progress.
+This endpoint will return a [`Meeting` object](#meeting-object) if there was a meeting in progress.
 
 #### Parameters
 > None
@@ -373,7 +373,7 @@ This endpoint will return a [`Meeting` object](#meeting_object) if there was a m
 >
 > *content-type: `application/json`*
 
-> [`Meeting` object](#meeting_object)
+> [`Meeting` object](#meeting-object)
 
 #### Error responses
 > *content-type: `application/json`*
@@ -393,7 +393,7 @@ This endpoint will return a [`Meeting` object](#meeting_object) if there was a m
 |---------|-----|---------|------------|
 |id       |not required|`int` >0 or `null`|Id of existing Score object to edit|
 |student  |required    |`int` >0        |Id of a Student|
-|meeting  |not required|`int` >0 or `null`|Id of a [`Meeting` object](#meeting_object)|
+|meeting  |not required|`int` >0 or `null`|Id of a [`Meeting` object](#meeting-object)|
 |score    |required    |`float`|score|
 |full_score|not required|`float`|full score|
 |reason    |not required|`string`|Description or the reason of score|
