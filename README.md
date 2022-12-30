@@ -1,15 +1,9 @@
 <div align="center">
 In the name of God of the rainbow
 
-# Kian
-
-> **Warning**
-> This repository is under development. The `main` branch contains first alpha version and may be unstable. Developing v1 at [`develop-v1`](https://github.com/bsimjoo-official/kian/tree/develop-v1) branch.
-
----
+<h1><img style="vertical-align:middle" src="https://user-images.githubusercontent.com/117530839/210110357-84313912-9748-4148-9d6a-3486bafa8a87.png"> Kian</h1>
 
 [![](https://img.shields.io/github/v/release/bsimjoo-official/kian?include_prereleases&label=latest%20pre-release)](https://github.com/bsimjoo-official/kian/releases)
-[![](https://img.shields.io/badge/dev--branch-develop--v1-blue)](https://github.com/bsimjoo-official/kian/tree/develop-v1)
 
 Kian is an network-based program to help teachers, which was started with purpose of making attendance smart.
 
