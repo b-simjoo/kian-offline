@@ -15,14 +15,14 @@
     width: 0%;
 }
 
-.fade-in{animation: fade var(--animation-duration) reverse forwards ease-in-out;}
+.fade-in{animation: fade var(--animation-duration) reverse backwards ease-in-out;}
 .fade-out{animation: fade var(--animation-duration) forwards ease-in-out;}
-.fade-left-in{animation: fade var(--animation-duration) reverse forwards ease-in-out, left var(--animation-duration) forwards ease-in-out;}
-.fade-left-out{animation: fade var(--animation-duration) forwards ease-in-out, left var(--animation-duration) reverse forwards ease-in-out;}
-.fade-right-in{animation: fade var(--animation-duration) reverse forwards ease-in-out, right var(--animation-duration) forwards ease-in-out;}
-.fade-right-out{animation: fade var(--animation-duration) forwards ease-in-out, right var(--animation-duration) reverse forwards ease-in-out;}
-.fade-down-in{animation: fade var(--animation-duration) reverse forwards ease-in-out, down var(--animation-duration) forwards ease-in-out;}
-.fade-down-out{animation: fade var(--animation-duration) forwards ease-in-out, down var(--animation-duration) reverse forwards ease-in-out;}
+.fade-left-in{animation: fade var(--animation-duration) reverse backwards ease-in-out, left var(--animation-duration) forwards ease-in-out;}
+.fade-left-out{animation: fade var(--animation-duration) forwards ease-in-out, left var(--animation-duration) reverse backwards ease-in-out;}
+.fade-right-in{animation: fade var(--animation-duration) reverse backwards ease-in-out, right var(--animation-duration) forwards ease-in-out;}
+.fade-right-out{animation: fade var(--animation-duration) forwards ease-in-out, right var(--animation-duration) reverse backwards ease-in-out;}
+.fade-down-in{animation: fade var(--animation-duration) reverse backwards ease-in-out, down var(--animation-duration) forwards ease-in-out;}
+.fade-down-out{animation: fade var(--animation-duration) forwards ease-in-out, down var(--animation-duration) reverse backwards ease-in-out;}
 .earthquake{animation: earthquake .5s alternate ease-in-out 2;}
 
 @keyframes typing {

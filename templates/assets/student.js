@@ -130,6 +130,14 @@ function createTable(info){
     )
 }
 
+function validateStdNum(event) {
+    if (e.currentTarget.length>10){
+        event.preventDefault();
+        return false;
+    }
+    return filter(event);
+}
+
 window.onload = ()=>{
     if (typeof(registered)!=='undefined' && registered){
         request('whoami',undefined,undefined,

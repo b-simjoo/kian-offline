@@ -40,4 +40,25 @@
         </div>
     </div>
 </div>
+<div id="dialog-container" class="hidden">
+    <form id="score-dlg" onsubmit="addScore(event)" class="dialog hidden">
+        <h3>Score</h3>
+        <p><span class="secondary-text">Student:</span> <span id="scr-dlg-name"></span> <small>(<span id="scr-dlg-number"></span>)</small></p>
+        <p><span class="secondary-text">Meeting:</span> <span id="scr-dlg-meeting"></span></p>
+        <div class = 'labeled-input' style="margin-top:10px">
+            <label>Score:</label>
+            <input name="score" type="number" step="0.01" onkeypress="filter(event,/[+-\d\.]/)" data-error="false" onkeyup="validateSFloat(event);">
+        </div>
+        <div class = 'labeled-input'>
+            <label>Full score:</label>
+            <input name="fullScore" type="number" step="0.01" onkeypress="filter(event,/[+\d\.]/)" data-error="false" onkeyup="validateFloat(event,true)">
+        </div>
+        <label>Reason:</label>
+        <textarea name="reason" rows="2" id="scr-dlg-reason" class="full-width"></textarea>
+        <div class = "fit-content float-right" style="margin-top:1rem">
+            <button class="inline secondary" onclick="hide_dialog('score-dlg');event.preventDefault();return false;">Cancel</button>
+            <button class="inline">OK</button>
+        </div>
+    </form>
+</div>
 {% endblock %}

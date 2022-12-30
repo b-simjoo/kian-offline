@@ -1,12 +1,12 @@
 function hide(element){
   if (typeof(element) === 'string')
-    return hide(document.getElementById(element));
+    element = document.getElementById(element);
   element.classList.add('hidden');
 }
 
 function show(element){
   if (typeof(element)==='string')
-    return show(document.getElementById(element));
+    element = document.getElementById(element);
   if(element.classList.contains('hidden'))
     element.classList.remove('hidden');
 }
@@ -17,7 +17,7 @@ function sleep(ms) {
 
 function animate(element, animation = null, direction = null,delay=0) {
   if (typeof (element) === 'string')
-    return animate(document.getElementById(element),animation,direction,delay);
+    element = document.getElementById(element);
 
   if (animation && direction) {
     return sleep(delay)
@@ -40,15 +40,17 @@ function animate(element, animation = null, direction = null,delay=0) {
 
 function shake(element) {
   if (typeof (element) === 'string')
-    return shake(document.getElementById(element));
+    element = document.getElementById(element);
 
-    element.classList.add('earthquake');
-    setTimeout(() => {
-      element.classList.remove('earthquake');
-    }, 1000);
+  element.classList.add('earthquake');
+  setTimeout(() => {
+    element.classList.remove('earthquake');
+  }, 1000);
 }
 
 function kbd_clear(element){
+  if (typeof (element) === 'string')
+    element = document.getElementById(element);
   let txt = element.innerText;
   element.classList.replace('typing-in','typing-out')
   return sleep(100 * txt.length).then(()=>element.classList.remove('typing-out'));
@@ -58,7 +60,7 @@ var r = document.querySelector(':root');
 
 function kbd_type(element,inner_html){
   if (typeof(element)==='string')
-    return kbd_type(document.getElementById(element),inner_html)
+    element = document.getElementById(element);
 
   if (element.classList.contains('typing-in')){
     return kbd_clear(element).then(()=>kbd_type(element,inner_html));

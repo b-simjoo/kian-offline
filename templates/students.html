@@ -16,7 +16,7 @@
         {% endif %}
             <h3 style="text-align:center"><i class="fa-solid fa-graduation-cap"></i> Student sign-up:</h3>
             <div id="student-code-group" class="input-group">
-                <input id="student-code" type="number" placeholder="Enter your student number" onkeypress="validate(event)">
+                <input id="student-code" type="number" placeholder="Enter your student number" onkeypress="validateStdNum(event)">
                 <button name="submit" class="secondary" onclick="register()"><i class="fa-solid fa-caret-right"></i></button>
             </div>
             <div style="width:100%;height:5rem"></div>
@@ -35,7 +35,7 @@
         </div>
         <div class="content hidden">
             <h2 style="text-align:center">Your profile</h2>
-            <div class="box" id="student-info">
+            <div class="box" id="student-info" style="max-width:100%;">
                 <div style="margin:10px">
                     <i class="fa-solid fa-user large"></i>
                     <div style="display:inline-block">

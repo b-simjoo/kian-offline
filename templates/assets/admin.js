@@ -66,6 +66,7 @@ function createTable(meetings, students) {
                             meetingTime = small({ cls: 'in-process' }, 'in-process');
                         let meetingTd = td({ id: 'meet-' + meeting.id, cls: 'meeting' }, meeting.date, '<br>', meetingTime);
                         meetingTd.setAttribute('colspan', 2);
+                        meetingTd.dataset.meetingId = meeting.id;
                         attachTooltip(meetingTd, () => [
                             p(undefined, span({ cls: 'secondary-text' }, 'Date: '), meeting.date),
                             p(undefined, span({ cls: 'secondary-text' }, 'Count of attendance: '), meeting.count_of_attendances),
@@ -112,16 +113,30 @@ function createTable(meetings, students) {
                                 ]
                                 )
                             })
-                            if (typeof (score) !== 'undefined') {
-                                score_td = td({ id: 'scr-' + score.id, cls: 'score' }, score.score.toString(), ' / ', score.full_score.toString());
-                                attachTooltip(score_td, () => [
-                                    p(undefined, span({ cls: 'secondary-text' }, 'Name: '), student.name),
-                                    p(undefined, span({ cls: 'secondary-text' }, 'Number: '), student.number),
-                                    p(undefined, span({ cls: 'secondary-text' }, 'Score: '), score.score),
-                                    p(undefined, span({ cls: 'secondary-text' }, 'Full-score: '), score.full_score),
-                                    p(undefined, span({ cls: 'secondary-text' }, 'Reason: '), score.reason)
-                                ]);
-                            }
+                        }
+                        if (typeof (score) !== 'undefined') {
+                            score_td = td({ id: 'scr-' + score.id, cls: 'score' }, score.score.toString(), ' / ', score.full_score.toString());
+                            attachTooltip(score_td, () => [
+                                p(undefined, span({ cls: 'secondary-text' }, 'Name: '), student.name),
+                                p(undefined, span({ cls: 'secondary-text' }, 'Number: '), student.number),
+                                p(undefined, span({ cls: 'secondary-text' }, 'Score: '), score.score),
+                                p(undefined, span({ cls: 'secondary-text' }, 'Full-score: '), score.full_score),
+                                p(undefined, span({ cls: 'secondary-text' }, 'Reason: '), score.reason || "")
+                            ]);
+                        } else 
+                            score = {id:null,score:0,full_score:0,reason:""}
+                        score_td.onclick = e=>{
+                            let dialog = document.getElementById('score-dlg');
+                            dialog.dataset.scoreId = score.id;
+                            dialog.dataset.meetingId = meeting.id;
+                            dialog.dataset.studentId = student.id;
+                            document.getElementById('scr-dlg-name').innerText = student.name;
+                            document.getElementById('scr-dlg-number').innerText = student.number;
+                            document.getElementById('scr-dlg-meeting').innerText = meeting.date;
+                            dialog.score.value = score.score;
+                            dialog.fullScore.value = score.full_score;
+                            dialog.reason.value = score.reason || "";
+                            show_dialog(dialog);
                         }
                         return [attendance_td, score_td];
                     }) : [td(undefined, '')]),
@@ -175,12 +190,52 @@ function startMeeting(){
 function chooseRandom(){
     if (document.getElementsByClassName('randomly-chosen').length==1)
         document.getElementsByClassName('randomly-chosen')[0].classList.remove('randomly-chosen');
-    let rndBtn = document.getElementById('choose-random-btn');
     let students = document.getElementById('students-table').getElementsByTagName('tbody')[0].children;
     let rnd = getRndInteger(0,students.length-1);
     students[rnd].classList.add('randomly-chosen');
-    students[rnd].scrollIntoView();
+    students[rnd].scrollIntoView({behavior: "smooth", block: "center", inline: "nearest"});
     show_msg('info',`chosen student number ${rnd+1} -> ${Students[rnd].name}`)
+}
+
+function addScore(e){
+    e.preventDefault();
+    let form = e.currentTarget;
+    let score = parseFloat(form.score.value) || parseInt(form.score.value);
+    if(form.score.dataset.error==='true'||isNaN(score)){
+        console.log('Score is not right');
+        shake(form.score);
+        return false
+    }
+    let fullScore = form.fullScore.value || 0;
+    fullScore = parseFloat(fullScore) || parseInt(fullScore);
+    if(form.fullScore.dataset.error==='true' || isNaN(fullScore)){
+        console.log('full score is not right');
+        shake(form.fullScore);
+        return false
+    }
+    let reason = form.reason.value || null;
+    let scoreId = parseInt(form.dataset.scoreId) || null;
+    let meetingId = parseInt(form.dataset.meetingId) || null;
+    let studentId = parseInt(form.dataset.studentId);
+    if(isNaN(studentId))
+        return false;
+    request('score',undefined,'POST',()=>{
+        hide_dialog('score-dlg')
+        show_msg('success','New score added');
+        renderTable();
+    },{
+        400:(res)=>{console.error(res)},
+        404:(res)=>{show_msg('error','Info not found')},
+        500:(res)=>{show_msg('error','unknown error when saving data to database')}
+    },{
+        id:scoreId,
+        student:studentId,
+        meeting:meetingId,
+        score:score,
+        full_score:fullScore,
+        reason:reason
+    })
+    return false;
 }
 
 window.onbeforeunload = function (e) {
@@ -189,8 +244,8 @@ window.onbeforeunload = function (e) {
     return e.returnValue = "Are you sure you want to exit without ending the meeting?";
 }
 
-window.onload = (e) => {
-    if (typeof (admin) !== 'undefined' && admin) {
+window.onload = document.onload = (e) => {
+    if (typeof (admin) !== 'undefined' && admin && curtainView !== 'admin-panel') {
         loadView('admin-panel');
         request('current_meeting',undefined,undefined,res=>{
             let startBtn = document.getElementById('start-meeting-btn');
@@ -200,7 +255,7 @@ window.onload = (e) => {
             meetingInProgress = true;
         },
         {
-            404:()=>{}
+            404:()=>{/*pass*/}
         });
         renderTable();
     } else {

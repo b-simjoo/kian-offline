@@ -1,5 +1,5 @@
 from json import load
-from peewee import SqliteDatabase, Model, TextField, FixedCharField, BooleanField, ForeignKeyField, DateTimeField, IntegerField, DateField, TimeField
+from peewee import SqliteDatabase, Model, TextField, FixedCharField, BooleanField, ForeignKeyField, DateTimeField, FloatField, DateField, TimeField
 from datetime import datetime
 from playhouse.shortcuts import model_to_dict, dict_to_model
 
@@ -85,8 +85,8 @@ class Attendance(BaseModel):  # type: ignore
     
 class Score(BaseModel):
     student = ForeignKeyField(Student,backref="scores")
-    score = IntegerField()
-    full_score = IntegerField(default=0)
+    score = FloatField()
+    full_score = FloatField(default=0)
     meeting = ForeignKeyField(Meeting, null=True, backref='scores')
     reason = TextField(null=True)
 

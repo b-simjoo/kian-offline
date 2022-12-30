@@ -23,8 +23,8 @@ html, body{
 
 h1,h2,h3,h4,h5{
     padding: 0;
-    margin-top: 1rem;
-    margin-bottom: .5rem;
+    margin-top: .5rem;
+    margin-bottom: 1rem;
 }
 
 h1{font-size: 2.5rem; font-weight: 700;}
@@ -40,6 +40,16 @@ code{
     border-radius: 4px;
     color:rgb(255, 152, 67);
 }
+
+i.fa-solid {color:var(--icon)}
+button i.fa-solid{color:var(--text)}
+i.absent{color:var(--absent)}
+i.present{color: var(--present);}
+i.large{font-size: 5rem;}
+i.xlarge{font-size: 7rem;}
+i.xxlarge{font-size: 10rem;}
+
+.secondary-text{color:var(--text-secondary)}
 
 .inline{display: inline;}
 .inline-block{display: inline-block;}
@@ -60,12 +70,10 @@ code{
     left: 50%;
     margin: 0;
 }
-
 .block.center{
     text-align: center;
     margin: auto;
 }
-
 .view-container{
     position:absolute;
     width: 100%;
@@ -73,23 +81,25 @@ code{
     transform: translateY(-50%);
     top:50%;
 }
-
 .content{
     margin: auto;
     width: 40%;
     padding: 5px;
 }
-
 .admin .content{
     width: 85%;
 }
+
+/***********************/
+/* Messages            */
+/***********************/
 
 #msg-container{
     position: absolute;
     width: 40%;
     transform: translateX(-50%);
     left: 50%;
-    z-index: 1000;
+    z-index: 100;
 }
 
 #msg-container .msg:nth-child(1){opacity: 1;}
@@ -159,17 +169,11 @@ code{
     color:hsl(110, 100%, 50%);
 }
 
-i.fa-solid {color:var(--icon)}
-button i.fa-solid{color:var(--text)}
-i.absent{color:var(--absent)}
-i.present{color: var(--present);}
-i.large{font-size: 5rem;}
-i.xlarge{font-size: 7rem;}
-i.xxlarge{font-size: 10rem;}
+/***********************/
+/* Form, Input, Button */
+/***********************/
 
-.secondary-text{color:var(--text-secondary)}
-
-input,button{
+input,button,textarea{
     display: block;
     border: solid 2px;
     padding-top: calc(.5rem - 2px);
@@ -184,23 +188,19 @@ input,button{
     min-height: 2rem;
     color:var(--text);
 }
-
 button{
     background-color: var(--primary-button);
     border-color: var(--primary-button);
 }
-
 button.secondary{
     background-color: var(--dark-bg);
     border-color: var(--border);
 }
-
 button.stop{
     background-color: var(--dark-bg);
     border-color: var(--border-secondary);
     color: var(--text-secondary);
 }
-
 button#retry{
     margin-top: 3rem;
     width: 2rem;
@@ -212,63 +212,18 @@ button#retry{
     background-color: rgba(255,255,255,.5);
     color: white;
 }
-
 button#retry i{
     color: white;
     font-size: 1rem;
 }
-
 button[name="submit"]{
     float: right;
     margin-right: 7.5%;
 }
-input{
-    width: 85%;
-    border: solid var(--border) 2px;
-    background-color: var(--dark-bg);
-}
-
-input.error{
-    background-color: var(--input-error);
-}
-
-input[type="number"]{
-    appearance: textfield;
-    -moz-appearance: textfield;
-}
-
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-    appearance: none;
-    -webkit-appearance: none;
-    margin: 0;
-}
-
-.input-group{
-    display:flex;
-    padding: 0;
-    width: 85%;
-    margin: auto;
-}
-
-.input-group input{
-    float:left;
-    border-radius: 1rem 0 0 1rem;
-    width: 100%;
-    margin-left: 0;
-    margin-right: 0;
-}
-
-.input-group button, .input-group button[name="submit"]{
-    margin-right: 0;
-    margin-left: -2px;
-    border-radius: 0 1rem 1rem 0;
-    width: 3rem;
-}
-
 button:hover,
 input:active,
-input:focus{
+input:focus,
+textarea:focus{
     outline:0;
     box-shadow: 0 0 10px 2px white;
 }
@@ -276,6 +231,66 @@ input:focus{
 button:active{
     transform: scale(95%);
 }
+input,textarea{
+    width: 85%;
+    border: solid var(--border) 2px;
+    background-color: var(--dark-bg);
+}
+input.full-width,textarea.full-width{
+    width: 100%;
+}
+input.error,
+input[data-error="true"]{
+    background-color: var(--input-error);
+}
+input[type="number"]{
+    appearance: textfield;
+    -moz-appearance: textfield;
+}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    appearance: none;
+    -webkit-appearance: none;
+    margin: 0;
+}
+.input-group{
+    display:flex;
+    padding: 0;
+    width: 85%;
+    margin: auto;
+}
+.input-group input{
+    float:left;
+    border-radius: 1rem 0 0 1rem;
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+}
+.input-group button, .input-group button[name="submit"]{
+    margin-right: 0;
+    margin-left: -2px;
+    border-radius: 0 1rem 1rem 0;
+    width: 3rem;
+}
+
+label{
+    color:var(--text-secondary);
+}
+.labeled-input{
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    align-items: center;
+    width: 100%;
+}
+.labeled-input label{
+    flex: 0 0 auto;
+}
+.labeled-input input{
+    flex: 1 0 4rem;
+}
+
+
 
 span.pre-function{color: var(--pre-function)}
 span.pre-string{color:var(--pre-string)}
@@ -344,28 +359,53 @@ kbd::after{
 
 table {
     margin: 5px auto;
-    border-collapse: collapse;
+    border-collapse: separate;
     text-align: center;
     width: fit-content;
-    background-color: var(--dark-bg);
+    border-spacing: 0;
 }
 
-thead{
+.admin-panel thead tr td{
+    position: sticky;
+    top:0;
     background-color: var(--light-bg);
+    z-index: 2;
+}
+
+thead tr td{
+    background-color: var(--light-bg);
+}
+
+.admin-panel thead tr td:nth-of-type(2){
+    left:0;
+    z-index: 3;
+}
+
+.admin-panel tbody tr td:nth-of-type(2){
+    position: sticky;
+    left:0;
+    z-index: 1;
 }
 
 td {
     border: 1px solid var(--border);
+    background-color: var(--dark-bg);
     color: var(--text);
-}
-
-tr.randomly-chosen{
-    box-shadow: 0 0 10px 2px white;
-    background-color: var(--light-bg);
-}
-
-td.student-name{
+    cursor: pointer;
     white-space: nowrap;
+}
+
+tr.randomly-chosen td{
+    background-color: var(--randomly-chosen) !important;
+}
+
+tr:nth-child(even) td{
+    background-color: var(--table-2n-row);
+}
+
+td.attendance{
+    width: 1%;
+    padding: 0 5px;
 }
 
 .tooltip{
@@ -383,6 +423,28 @@ td.student-name{
 
 .tooltip .spinner{
     margin: 5rem;
+}
+
+#dialog-container{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0; left: 0;
+    background-color: var(--dialog-shadow);
+    backdrop-filter: blur(10px);
+    z-index: 98;
+}
+
+.dialog{
+    position: absolute;
+    transform: translate(-50%,-50%);
+    top: 50%; left: 50%;
+    background-color: var(--dark-bg);
+    border-radius: 1rem;
+    padding: .5rem 1.5rem;
+    width: fit-content;
+    height: fit-content;
+    z-index: 99;
 }
 
 .content#login{
@@ -405,8 +467,18 @@ td.student-name{
     height: 0;
 }
 
+footer{
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+    text-align: center;
+}
+
 @media only screen and (max-width: 650px) {
-    html, body{font-size: 85%;}
+    html, body{font-size: 75%;}
+    i.large{
+        font-size: 4rem;
+    }
     .content {
         width: 85%;
     }

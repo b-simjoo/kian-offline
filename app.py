@@ -1,12 +1,17 @@
 from flask import Flask, request, session, render_template, redirect, jsonify, g, url_for, abort
 from flask_session import Session
 from flask_mobility import Mobility
+from flask_expects_json import expects_json
 from datetime import timedelta, datetime
-from customjsonencoder import CustomJSONEncoder
 from openpyxl import load_workbook
-from model import db, Student, Device, Attendance, Score, Meeting, _TABLES_
 from getmac import get_mac_address
 from tempfile import NamedTemporaryFile
+from peewee import DoesNotExist
+from jsonschema import ValidationError
+
+from model import db, Student, Device, Attendance, Score, Meeting, _TABLES_
+from customjsonencoder import CustomJSONEncoder
+from schema import LOGIN_SCHEMA, SCORE_SCHEMA
 
 import json
 import functools
@@ -60,6 +65,13 @@ def _before_request():
 def _db_close(exc):
    if not g.db.is_closed():
       g.db.close()
+      
+@app.errorhandler(400)
+def bad_request(error):
+    if isinstance(error.description, ValidationError):
+        original_error = error.description
+        return jsonify({'info': original_error.message}), 400
+    return error
 
 @app.route('/')
 def index():
@@ -272,7 +284,7 @@ def get_meeting(meeting_id:int):
         return jsonify(meet.to_dict(backrefs=True))
     abort(404)
     
-app.route('api/v1/meetings/<int:meeting_id>',methods=['DEL'])
+@app.route('/api/v1/meetings/<int:meeting_id>',methods=['DEL'])
 @login_required
 def del_meetings(meeting_id:int):
     if (meet:=Meeting.get_or_none(Meeting.id==meeting_id)) is not None: #type: ignore
@@ -282,3 +294,28 @@ def del_meetings(meeting_id:int):
             return jsonify(rows=rows)
         return jsonify(info="didn't deleted any row"), 500
     abort(404)
+    
+@app.route('/api/v1/score', methods=["POST"])
+@login_required
+@expects_json(SCORE_SCHEMA)
+def add_edit_score():
+    try:
+        student = Student.get_by_id(g.data['student'])
+        meeting = g.data['meeting'] and Meeting.get_by_id(g.data['meeting'])
+        score = g.data['id'] and Score.get_by_id(g.data['id'])
+    except DoesNotExist:
+        abort(404)
+    if score:
+        score.score = g.data['score']
+        score.full_score = g.data['full_score']
+        score.reason = g.data['reason']
+    else:
+        score = Score.create(
+            student = student,
+            score = g.data['score'],
+            full_score = g.data['full_score'],
+            meeting = meeting,
+            reason = g.data['reason']
+        )
+    res = score.save()
+    return jsonify(done=res==1), 200 if res==1 else 500

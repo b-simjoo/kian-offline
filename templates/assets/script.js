@@ -13,21 +13,29 @@ function slide(slide) {
     }
 }
 
-var curtain_view = null;
+var curtainView = null;
 function loadView(viewId) {
     let view = document.getElementById(viewId);
-    if (curtain_view) {
-        return animate(curtain_view, 'fade', 'out')
+    if (curtainView) {
+        return animate(curtainView, 'fade', 'out')
             .then(() => animate(view, 'fade', 'in'))
-            .then(() => { curtain_view = view });
+            .then(() => { curtainView = viewId });
     }
     return animate(view, 'fade', 'in')
-        .then(() => { curtain_view = view });
+        .then(() => { curtainView = viewId });
 }
 
-function request(action, params = {}, method = 'GET', callback = null, error_handlers = {}) {
+function request(action, params = {}, method = 'GET', callback = null, error_handlers = {}, data = null) {
     let url = '/api/v1/' + action + '?' + (new URLSearchParams(params)).toString();
-    return fetch(url, { method: method, redirect: 'follow', })
+    options = { method: method, redirect: 'follow', };
+    if (data){
+        options.headers = {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        };
+        options.body = JSON.stringify(data);
+    }
+    return fetch(url, options)
         .then((res) => {
             if (res.status === 200)
                 return res.json().then(callback);
@@ -53,26 +61,21 @@ function show_msg(message_type, text, duration = 10000) {
         });
 }
 
-function validate(event) {
-    if ((event.key.length === 1 && /\D/.test(event.key)) || event.currentTarget.textLength > 10) {
-        event.preventDefault();
-    }
-}
-
 function type_text(html) { return kbd_type('loading-text', html) }
 
 function pre(style, content) { return `<span class="pre-${style}">${content}</span>` }
 
-function createElement(tag, id = null, cls = null, ...contents) {
+function createElement(tag, attrs = {}, ...contents) {
     let elem = document.createElement(tag);
-    if (id)
-        elem.id = id;
-    if (cls)
-        if (typeof (cls) === 'string')
-            elem.classList.add(cls);
+    if (typeof attrs.cls !== 'undefined')
+        if (typeof (attrs.cls) === 'string')
+            elem.classList.add(attrs.cls);
         else
-            elem.classList.add(...cls);
+            elem.classList.add(...attrs.cls);
+        delete attrs.cls;
 
+    Object.entries(attrs).forEach(([key,value])=>{elem.setAttribute(key,value)})
+    
     contents.forEach((content) => {
         if (typeof (content) === 'string')
             elem.innerHTML += content;
@@ -84,40 +87,61 @@ function createElement(tag, id = null, cls = null, ...contents) {
     return elem
 }
 
-function table({ id = null, cls = null } = {}, ...content) {
-    return createElement('table', id, cls, ...content)
+function validateSFloat(e,nullable=false){
+    if((e.currentTarget.value=="" && nullable) || /^[+-]?\d+(.\d+)?$/.test(e.currentTarget.value))
+        e.currentTarget.dataset.error=false;
+    else
+        e.currentTarget.dataset.error=true;
 }
 
-function thead({ id = null, cls = null } = {}, ...content) {
-    return createElement('thead', id, cls, ...content)
+function validateFloat(e,nullable=false){
+    if((e.currentTarget.value=="" && nullable) || /^\d+(.\d+)?$/.test(e.currentTarget.value))
+        e.currentTarget.dataset.error=false;
+    else
+        e.currentTarget.dataset.error=true;
 }
 
-function tbody({ id = null, cls = null } = {}, ...content) {
-    return createElement('tbody', id, cls, ...content)
+function filter (e,reg=/\d/){
+    if(!reg.test(e.key)){
+        e.preventDefault();
+        return false;
+    }
 }
 
-function tr({ id = null, cls = null } = {}, ...content) {
-    return createElement('tr', id, cls, ...content)
+function table(attrs={}, ...content) {
+    return createElement('table', attrs, ...content)
 }
 
-function td({ id = null, cls = null } = {}, ...content) {
-    return createElement('td', id, cls, ...content)
+function thead(attrs={}, ...content) {
+    return createElement('thead', attrs, ...content)
 }
 
-function span({ id = null, cls = null } = {}, ...content) {
-    return createElement('span', id, cls, ...content)
+function tbody(attrs={}, ...content) {
+    return createElement('tbody', attrs, ...content)
 }
 
-function div({ id = null, cls = null } = {}, ...content) {
-    return createElement('div', id, cls, ...content)
+function tr(attrs={}, ...content) {
+    return createElement('tr', attrs, ...content)
 }
 
-function p({ id = null, cls = null } = {}, ...content) {
-    return createElement('p', id, cls, ...content)
+function td(attrs={}, ...content) {
+    return createElement('td', attrs, ...content)
 }
 
-function small({ id = null, cls = null } = {}, ...content) {
-    return createElement('small', id, cls, ...content)
+function span(attrs={}, ...content) {
+    return createElement('span', attrs, ...content)
+}
+
+function div(attrs={}, ...content) {
+    return createElement('div', attrs, ...content)
+}
+
+function p(attrs={}, ...content) {
+    return createElement('p', attrs, ...content)
+}
+
+function small(attrs={}, ...content) {
+    return createElement('small', attrs, ...content)
 }
 
 function textNode(...content) {
@@ -126,53 +150,63 @@ function textNode(...content) {
 
 var mouseX;
 var mouseY;
-var mouseTarget = null;
-var tooltipHideTimeout = null;
+var tooltipHideTimeout, tooltipShowTimeout, tooltipFor;
 function attachTooltip(element, tooltipContentGenerator) {
     if (typeof (element) === 'string')
-        return attachTooltip(document.getElementById(element), tooltipContentGenerator);
+        element = document.getElementById(element);
 
     element.onmouseover = event => {
-        if(event.target!==element || mouseTarget===element)
+        if(event.currentTarget===tooltipFor)        // to prevent showing tooltip for same element
             return
-        mouseTarget = element;
-        let tooltipElement = div({ id: 'tooltip', cls: ['tooltip', 'hidden'] }, span({ 'cls': 'spinner' }));
-        tooltipElement.onmouseover = () => {
-            tooltipHideTimeout && clearTimeout(tooltipHideTimeout);
-            element.onmouseleave = () => { };
-            tooltipElement.onmouseleave = () => {
-                if(mouseTarget === element)
-                    mouseTarget = null;
-                animate(tooltipElement, 'fade', 'out').then(() => { tooltipElement.remove(); })
-            }
+        tooltipFor = element;
+        let theTooltip = div({ id: 'tooltip', cls: ['tooltip', 'hidden'] }, span({ 'cls': 'spinner' }));
+        theTooltip.onmouseover = () => {
+            if (tooltipFor===element && tooltipHideTimeout)
+                clearTimeout(tooltipHideTimeout);     // mouse leaves the element, so this prevent the parent to hide tooltip
         }
-        let tooltipTimeout = setTimeout(() => {
-            tooltipTimeout = null;
-            tooltipElement.style.top = mouseY + 'px';
-            tooltipElement.style.left = mouseX + 'px';
-            document.body.append(tooltipElement);
-            (new Promise((resolve) => resolve(tooltipContentGenerator()))).then(res=>{tooltipElement.replaceChildren(...res)})
-            animate(tooltipElement, 'fade', 'in');
+        theTooltip.onmouseleave = () => {
+            animate(theTooltip, 'fade', 'out').then(() => { theTooltip.remove(); if (tooltipFor===element) tooltipFor = null;});
+        }
+        tooltipShowTimeout && clearTimeout(tooltipShowTimeout)      // force clear time out before set a new one
+        tooltipShowTimeout = setTimeout(() => {
+            tooltipShowTimeout = null;
+            theTooltip.style.top = mouseY + 'px';
+            theTooltip.style.left = mouseX + 'px';
+            document.body.append(theTooltip);
+            (new Promise((resolve) => resolve(tooltipContentGenerator()))).then(res=>{theTooltip.replaceChildren(...res)});
+            animate(theTooltip, 'fade', 'in');
         }, 2000)
+
         element.onmouseleave = () => {
             tooltipHideTimeout = setTimeout(()=>{
                 tooltipHideTimeout = null;
-                if (tooltipTimeout !== null) {
-                    clearTimeout(tooltipTimeout);
-                    tooltipTimeout = null;
-                }
-                if (document.body.contains(tooltipElement))
-                    animate(tooltipElement,'fade','out').then(()=>{tooltipElement.remove()})
-                if(mouseTarget === element)
-                    mouseTarget = null;
-                element.onmouseleave = () => { };
-            },200);
+                if (tooltipFor===element && tooltipShowTimeout !== null) {
+                    clearTimeout(tooltipShowTimeout);
+                    tooltipShowTimeout = null;
+                } else
+                    animate(theTooltip, 'fade', 'out').then(() => { theTooltip.remove(); });
+                if (tooltipFor===element) tooltipFor = null;
+            },20);
         }
     }
 }
 
 function getRndInteger(min, max) {
     return Math.floor(Math.random() * (max - min) ) + min;
+}
+
+function show_dialog(dlg){
+    if (typeof(dlg)==='string')
+        dlg = document.getElementById(dlg);
+    animate('dialog-container','fade','in');
+    animate(dlg,'fade','in',500);
+}
+
+function hide_dialog(dlg){
+    if (typeof(dlg)==='string')
+        dlg = document.getElementById(dlg);
+    animate(dlg,'fade','out');
+    animate('dialog-container','fade','out',500);
 }
 
 document.onmousemove = (event) => {

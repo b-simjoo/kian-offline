@@ -13,8 +13,9 @@
     --randomly-chosen:#680023;
     --absent: #ff735b;
     --present: #69ff5b;
-    --table: #ffeed0;
+    --table-2n-row: hsl(0, 0%, 15%);
     --in-process: #0d9b00;
+    --dialog-shadow:rgba(255, 255, 255,20%);
 
     /*----[ syntax highlight colors ]----*/
     --pre-function: #f8518d;
