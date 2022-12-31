@@ -26,6 +26,43 @@ The Kian project has just started and has a good potential for development. Curr
  - Registration of attendance history and the history of the device used
  - Prevent unauthorized registration of attendance for several students from one device ([Read more](#why-does-this-app-uses-an-access-point))
 
+## Quick setup
+### Clone repository and install requirements
+The `main` branch always contain latest version.
+```batch
+git clone https://github.com/bsimjoo-official/kian.git
+cd kian
+
+pip install -r requirements.txt
+# or 
+pip install --user -r requirements
+```
+
+### Opening hotspot on Windows
+This app designed to use hotspot as a local network hosted by your system. This is needed to get devices mac address [read more](#why-does-this-app-uses-an-access-point).
+
+First you should know that your wireless card supports hotspot or not.
+```batch
+netsh wlan show drivers
+```
+Then try to find `Hosted network supported`. If it is `Yes` so you can open a hotspot (or hosted network) and use this software. and if the answer is `No` unfortunately you can not use this app. To configure hotspot use following command:
+```batch
+netsh wlan set hostednetwork mode=allow "ssid=[YourHotspotName]" "key=[Password]"
+```
+now you can start hotspot:
+```batch
+netsh wlan start hostednetwork
+```
+To stop hosted network use
+```batch
+netsh wlan stop hostednetwork
+```
+
+### Running application
+Flask developers recommends ([here](https://flask.palletsprojects.com/en/2.2.x/quickstart/)) to do not use integrated server for production and it is just for development, they recommended to use WSGI, nginx, Apache or ... . but this app is designed for a class of students not for word-wide-web! and for simplicity I use flask server:
+```batch
+flask run --host=0.0.0.0 --port 80 --no-debugger
+```
 
 ## Who or What is Kian?
 
