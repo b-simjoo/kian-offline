@@ -1,0 +1,77 @@
+:root{
+    --text-len: 41;
+    --animation-duration: .75s;
+}
+
+.hidden{display: none !important;}
+
+.typing-in::after{
+    animation: typing calc(.1s * var(--text-len)) steps(var(--text-len)) forwards, blink .5s alternate-reverse infinite;
+    width: 100%;
+}
+
+.typing-out::after{
+    animation: clear-text calc(.1s * var(--text-len)) steps(var(--text-len)) forwards, blink .5s alternate-reverse infinite;
+    width: 0%;
+}
+
+.fade-in{animation: fade var(--animation-duration) reverse backwards ease-in-out;}
+.fade-out{animation: fade var(--animation-duration) forwards ease-in-out;}
+.fade-left-in{animation: fade var(--animation-duration) reverse backwards ease-in-out, left var(--animation-duration) forwards ease-in-out;}
+.fade-left-out{animation: fade var(--animation-duration) forwards ease-in-out, left var(--animation-duration) reverse backwards ease-in-out;}
+.fade-right-in{animation: fade var(--animation-duration) reverse backwards ease-in-out, right var(--animation-duration) forwards ease-in-out;}
+.fade-right-out{animation: fade var(--animation-duration) forwards ease-in-out, right var(--animation-duration) reverse backwards ease-in-out;}
+.fade-down-in{animation: fade var(--animation-duration) reverse backwards ease-in-out, down var(--animation-duration) forwards ease-in-out;}
+.fade-down-out{animation: fade var(--animation-duration) forwards ease-in-out, down var(--animation-duration) reverse backwards ease-in-out;}
+.earthquake{animation: earthquake .5s alternate ease-in-out 2;}
+
+@keyframes typing {
+    0%{width: 100%;}
+    100%{width: 0%;}
+}
+
+@keyframes clear-text {
+    from{width: 0%;}
+    to{width: 100%;}
+}
+
+@keyframes blink {
+    to{border-color: transparent;}
+}
+
+@keyframes spinner {
+    0%{content:"\EE06"}
+    14%{content:"\EE07"}
+    28%{content:"\EE08"}
+    42%{content:"\EE09"}
+    57%{content:"\EE0A"}
+    85%{content:"\EE0B"}
+}
+
+@keyframes fade {
+    to{opacity: 0;}
+}
+
+@keyframes left {
+    from {transform: translateX(-100%);}
+    to{transform: translateX(0);}
+}
+
+@keyframes right {
+    from {transform: translateX(100%);}
+    to{transform: translateX(0);}
+}
+
+@keyframes down {
+    from {transform: translateY(-100%);}
+    to {transform: translateY(0);}
+}
+
+@keyframes earthquake {
+    16.6%{transform: translateX(2.5%);}
+    33.3%{transform: translateX(-2.5%);}
+    50.0%{transform: translateX(5%);}
+    66.6%{transform: translateX(-5%);}
+    83.3%{transform: translateX(10%);}
+    100%{transform: translateX(-10%);}
+}

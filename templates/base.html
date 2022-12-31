@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>{% block title %}{%endblock%}"Kian App" By Bsimjoo</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" href="assets/fontawesome/css/fontawesome.min.css">
+	<link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
+	<link rel="stylesheet" href="assets/palette.css">
+	<link rel="stylesheet" href="assets/Fira_Code_v6.2/fira_code.css">
+	<link rel="stylesheet" href="assets/style.css">
+	<script type="text/javascript" src="assets/animations.js"></script>
+	<script type="text/javascript" src="assets/script.js"></script>
+	{% block head %}{% endblock %}
+</head>
+
+<body>
+	<div id="msg-container">
+	</div>
+	{% block body %}{% endblock %}
+	<footer><small>KIAN - open source attendance system by BSimjoo - <a href="https://github.com/bsimjoo-official/kian">see source on github</a></small></footer>
+</body>
+
+</html>
