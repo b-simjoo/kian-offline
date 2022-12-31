@@ -13,9 +13,7 @@ from flask_session import Session
 from flask_mobility import Mobility
 from flask_expects_json import expects_json
 from datetime import timedelta, datetime
-from openpyxl import load_workbook
 from getmac import get_mac_address
-from tempfile import NamedTemporaryFile
 from peewee import DoesNotExist
 from jsonschema import ValidationError
 
