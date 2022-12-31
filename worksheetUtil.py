@@ -12,7 +12,12 @@ except:
     exit(99)
 
 
-def get_input(condition: Callable, *prompt, sep=" ", error: list | tuple | str = "[ERROR} Bad input"):
+def get_input(
+    condition: Callable,
+    *prompt,
+    sep=" ",
+    error: list | tuple | str = "[ERROR} Bad input",
+):
     while True:
         inp = input(sep.join(prompt))
         response = condition(inp)
@@ -20,7 +25,9 @@ def get_input(condition: Callable, *prompt, sep=" ", error: list | tuple | str =
         if isinstance(response, tuple) and len(response) == 2:
             response, result = response
 
-        if (isinstance(response, bool) and response) or (isinstance(response, int) and response == 0):
+        if (isinstance(response, bool) and response) or (
+            isinstance(response, int) and response == 0
+        ):
             if result:
                 return result
             else:
@@ -132,7 +139,9 @@ def add(student_name, student_number):
     if res := (std.save()) != 1:
         print(f"[Error] Something went wrong, database returned {res} while saving.")
         return 3
-    print(f'Successfully added new student (id:{std.id}, name:"{std.name}", number:{std.number})')
+    print(
+        f'Successfully added new student (id:{std.id}, name:"{std.name}", number:{std.number})'
+    )
     return 0
 
 
