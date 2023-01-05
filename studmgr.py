@@ -1,18 +1,23 @@
 from openpyxl import load_workbook
-from model import db, Student, Device, Attendance, Score, Meeting, config, _TABLES_
-from os.path import exists
-from os import remove
+from model import db, Student, Device, Attendance, Score, Meeting, _TABLES_
 from typing import Callable
 import re
+import argparse
+import pprint
 
 try:
     db.connect()
-except:
+except:  # noqa: E722
     print("[ERROR] can not connect to database, are you sure you shuted server down?!")
     exit(99)
 
 
-def get_input(condition: Callable, *prompt, sep=" ", error: list | tuple | str = "[ERROR} Bad input"):
+def get_input(
+    condition: Callable,
+    *prompt,
+    sep=" ",
+    error: list | tuple | str = "[ERROR} Bad input",
+):
     while True:
         inp = input(sep.join(prompt))
         response = condition(inp)
@@ -20,12 +25,14 @@ def get_input(condition: Callable, *prompt, sep=" ", error: list | tuple | str =
         if isinstance(response, tuple) and len(response) == 2:
             response, result = response
 
-        if (isinstance(response, bool) and response) or (isinstance(response, int) and response == 0):
+        if (isinstance(response, bool) and response) or (
+            isinstance(response, int) and response == 0
+        ):
             if result:
                 return result
             else:
                 return inp
-        elif isinstance(response, int) and not isinstance(error, str):
+        elif isinstance(response, int) and isinstance(error, (list, tuple)):
             print(error[response - 1])
         else:
             print(error)
@@ -35,7 +42,7 @@ validate_range_input = re.compile(r"([A-Z]+)(\d+):((\1\d+)|([A-Z]+)\2)")
 
 
 def validate_array(inp, ws, len_match=0):
-    if validate_range_input.fullmatch(inp) == None:
+    if validate_range_input.fullmatch(inp) is None:
         return 1
     start, end = inp.split(":")
     array = ws[start:end]
@@ -83,7 +90,8 @@ def load(file):
         ws = wb.active
 
     print(
-        f'opened "{ws.title}" now please give address of data, you can use excel to find ranges, students name and number must match one-to-one, means first student name saves by first student number.'
+        f'opened "{ws.title}" now please give address of data, you can use excel to find ranges, "\
+            "students name and number must match one-to-one, means first student name saves by first student number.'
     )
 
     students_name = get_input(
@@ -132,8 +140,34 @@ def add(student_name, student_number):
     if res := (std.save()) != 1:
         print(f"[Error] Something went wrong, database returned {res} while saving.")
         return 3
-    print(f'Successfully added new student (id:{std.id}, name:"{std.name}", number:{std.number})')
+    print(
+        f'Successfully added new student (id:{std.id}, name:"{std.name}", number:{std.number})'
+    )
     return 0
 
 
-add("بهنام سیم‌جو", "983210112")
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        "studmgr.py", description="This script will import your excel worksheet."
+    )
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument(
+        "--load",
+        "-l",
+        nargs=1,
+        metavar='"worksheet file path"',
+        type=argparse.FileType("rb"),
+        help="loads a excel worksheet file and imports it to database",
+    )
+    group.add_argument(
+        "--add",
+        "-a",
+        nargs=2,
+        metavar=("name", "number"),
+        help="manually add a new student to database",
+    )
+    args = parser.parse_args()
+    if args.load is not None:
+        exit(load(args.load))
+    if args.add is not None:
+        exit(add(*args.add))
