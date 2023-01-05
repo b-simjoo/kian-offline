@@ -56,13 +56,9 @@ def _before_request():
     if "meeting" not in g:
         g.meeting = Meeting.get_or_none(Meeting.in_progress == True)  # noqa: E712
 
-    if session.get("mac") is None:
-        if request.remote_addr in ("localhost", "127.0.0.1"):
-            session["local_user"] = True
-            if app.debug:
-                mac = "local"
-            else:
-                return redirect(url_for("admin"))
+    if "mac" not in session:
+        if request.remote_addr in ("localhost", "127.0.0.1") or app.testing:
+            mac = "local"
         else:
             mac = get_mac_address(ip=request.remote_addr)
         device, created = Device.get_or_create(mac=mac)
@@ -88,6 +84,8 @@ def bad_request(error):
 
 @app.route("/")
 def index():
+    if session["mac"] == "local" and not (app.testing or app.debug):
+        return redirect("admin")
     return render_template(
         "students.html", registered=(session["device"].student is not None)
     )
