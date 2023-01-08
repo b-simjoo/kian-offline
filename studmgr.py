@@ -1,12 +1,24 @@
 from openpyxl import load_workbook
-from model import db, Student, Device, Attendance, Score, Meeting, _TABLES_
+from model import (  # noqa:F401
+    database_proxy,
+    Student,
+    Device,
+    Attendance,
+    Score,
+    Meeting,
+    _TABLES_,
+)
+from playhouse.db_url import connect
 from typing import Callable
+import json
 import re
 import argparse
-import pprint
+
+config: dict = json.load(open("config.json", "r"))
 
 try:
-    db.connect()
+    db = connect(config["database"])
+    database_proxy.initialize(db)
 except:  # noqa: E722
     print("[ERROR] can not connect to database, are you sure you shuted server down?!")
     exit(99)

@@ -1,10 +1,6 @@
 {
-    "host":"0.0.0.0",
-    "port":"80",
-    "AP_SSID":"KIAN roll call app",
-    "passw": "12345678",
-    "database": "database.sqlite",
-    "admin from localhost": true,
+    "database": "sqlite:///database.sqlite",
+    "local admin": true,
     "admin username": "kian pirfalak",
     "admin password": "admin"
 }
