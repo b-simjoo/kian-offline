@@ -1,8 +1,8 @@
-from flask.json import JSONEncoder
+from flask.json.provider import DefaultJSONProvider
 from datetime import date, time
 
 
-class CustomJSONEncoder(JSONEncoder):
+class CustomJSONProvider(DefaultJSONProvider):
     def default(self, obj):
         try:
             if isinstance(obj, date):
@@ -14,4 +14,4 @@ class CustomJSONEncoder(JSONEncoder):
             pass
         else:
             return list(iterable)
-        return JSONEncoder.default(self, obj)
+        return DefaultJSONProvider.default(self, obj)  # type: ignore

@@ -1,13 +1,25 @@
 from openpyxl import load_workbook
-from model import db, Student, Device, Attendance, Score, Meeting, config, _TABLES_
-from os.path import exists
-from os import remove
+from model import (  # noqa:F401
+    database_proxy,
+    Student,
+    Device,
+    Attendance,
+    Score,
+    Meeting,
+    _TABLES_,
+)
+from playhouse.db_url import connect
 from typing import Callable
+import json
 import re
+import argparse
+
+config: dict = json.load(open("config.json", "r"))
 
 try:
-    db.connect()
-except:
+    db = connect(config["database"])
+    database_proxy.initialize(db)
+except:  # noqa: E722
     print("[ERROR] can not connect to database, are you sure you shuted server down?!")
     exit(99)
 
@@ -32,7 +44,7 @@ def get_input(
                 return result
             else:
                 return inp
-        elif isinstance(response, int) and not isinstance(error, str):
+        elif isinstance(response, int) and isinstance(error, (list, tuple)):
             print(error[response - 1])
         else:
             print(error)
@@ -42,7 +54,7 @@ validate_range_input = re.compile(r"([A-Z]+)(\d+):((\1\d+)|([A-Z]+)\2)")
 
 
 def validate_array(inp, ws, len_match=0):
-    if validate_range_input.fullmatch(inp) == None:
+    if validate_range_input.fullmatch(inp) is None:
         return 1
     start, end = inp.split(":")
     array = ws[start:end]
@@ -90,7 +102,8 @@ def load(file):
         ws = wb.active
 
     print(
-        f'opened "{ws.title}" now please give address of data, you can use excel to find ranges, students name and number must match one-to-one, means first student name saves by first student number.'
+        f'opened "{ws.title}" now please give address of data, you can use excel to find ranges, "\
+            "students name and number must match one-to-one, means first student name saves by first student number.'
     )
 
     students_name = get_input(
@@ -145,4 +158,28 @@ def add(student_name, student_number):
     return 0
 
 
-add("بهنام سیم‌جو", "983210112")
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        "studmgr.py", description="This script will import your excel worksheet."
+    )
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument(
+        "--load",
+        "-l",
+        nargs=1,
+        metavar='"worksheet file path"',
+        type=argparse.FileType("rb"),
+        help="loads a excel worksheet file and imports it to database",
+    )
+    group.add_argument(
+        "--add",
+        "-a",
+        nargs=2,
+        metavar=("name", "number"),
+        help="manually add a new student to database",
+    )
+    args = parser.parse_args()
+    if args.load is not None:
+        exit(load(args.load))
+    if args.add is not None:
+        exit(add(*args.add))

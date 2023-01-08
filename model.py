@@ -1,6 +1,5 @@
-from json import load
 from peewee import (
-    SqliteDatabase,
+    DatabaseProxy,
     Model,
     TextField,
     FixedCharField,
@@ -14,14 +13,12 @@ from peewee import (
 from datetime import datetime
 from playhouse.shortcuts import model_to_dict
 
-config: dict = load(open("config.json", "r"))
-
-db = SqliteDatabase(config["database"], pragmas={"foreign_keys": 1})
+database_proxy = DatabaseProxy()
 
 
 class BaseModel(Model):
     class Meta:
-        database = db
+        database = database_proxy
 
     def to_dict(
         self,
@@ -92,7 +89,7 @@ class Meeting(
 
 
 class Student(BaseModel):
-    name = TextField(unique=True)
+    name = FixedCharField(max_length=20, unique=True)
     number = FixedCharField(max_length=11, unique=True)
     # scores
     # attendances
@@ -124,7 +121,7 @@ class Student(BaseModel):
 
 
 class Device(BaseModel):  # type: ignore
-    mac = TextField(unique=True)
+    mac = FixedCharField(unique=True, max_length=17)
     blocked = BooleanField(default=False)
     student = ForeignKeyField(Student, null=True, backref="devices")
     registration_time = DateTimeField(default=datetime.now)
@@ -146,4 +143,4 @@ class Score(BaseModel):
     reason = TextField(null=True)
 
 
-_TABLES_ = (Meeting, Student, Attendance, Score)
+_TABLES_ = (Meeting, Device, Student, Attendance, Score)

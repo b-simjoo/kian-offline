@@ -10,59 +10,53 @@ from flask import (
     abort,
 )
 from flask_session import Session
-from flask_mobility import Mobility
 from flask_expects_json import expects_json
 from datetime import timedelta, datetime
 from getmac import get_mac_address
-from peewee import DoesNotExist
+from peewee import DoesNotExist, Database
 from jsonschema import ValidationError
+from customjsonprovider import CustomJSONProvider
+from playhouse.flask_utils import FlaskDB
 
-from model import db, Student, Device, Attendance, Score, Meeting, _TABLES_
-from customjsonencoder import CustomJSONEncoder
+from model import database_proxy, Student, Device, Attendance, Score, Meeting, _TABLES_
 from schema import LOGIN_SCHEMA, SCORE_SCHEMA
 
 import json
 import functools
 
+
+Flask.json_provider_class = CustomJSONProvider
 app = Flask(__name__, static_folder=r"templates\assets")
-app.json_encoder = CustomJSONEncoder
-app.config["DEBUG"] = (True,)
+config: dict = json.load(open("config.json", "r"))
+app.config["DATABASE"] = config["database"]
 app.config["SESSION_PERMANENT"] = True
 app.config["SESSION_TYPE"] = "filesystem"
-app.config["SESSION_USE_SIGNER"] = False
-app.config["TRAP_HTTP_EXCEPTIONS"] = True
 app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(hours=2)
-app.config["meeting"] = None
+app.config["local admin"] = config.get("local admin", True)
+app.config["admin username"] = config.get("admin username", "kian pirfalak")
+app.config["admin password"] = config.get("admin password", "admin")
+if (
+    app.config["admin username"] == "kian pirfalak"
+    or app.config["admin password"] == "admin"
+):
+    app.logger.warning("Using default username or password for admin.")
+db_wrapper = FlaskDB(app)
 Session(app)
-Mobility(app)
 
-config: dict = json.load(open("config.json", "r"))
-
-
-@app.before_first_request
-def initialize():
-    db.connect()
+db: Database = db_wrapper.database  # type: ignore
+database_proxy.initialize(db)
+with db:
     db.create_tables(_TABLES_)
 
 
 @app.before_request
 def _before_request():
-    if "db" not in g:
-        g.db = db
-
-    if not g.db.is_connection_usable():
-        g.db.connect()
-
     if "meeting" not in g:
         g.meeting = Meeting.get_or_none(Meeting.in_progress == True)  # noqa: E712
 
-    if session.get("mac") is None:
-        if request.remote_addr in ("localhost", "127.0.0.1"):
-            session["local_user"] = True
-            if app.debug:
-                mac = "local"
-            else:
-                return redirect(url_for("admin"))
+    if "mac" not in session:
+        if request.remote_addr in ("localhost", "127.0.0.1") or app.testing:
+            mac = "local"
         else:
             mac = get_mac_address(ip=request.remote_addr)
         device, created = Device.get_or_create(mac=mac)
@@ -70,12 +64,6 @@ def _before_request():
             device.save()
         session["mac"] = mac
         session["device"] = device
-
-
-@app.teardown_request
-def _db_close(exc):
-    if not g.db.is_closed():
-        g.db.close()
 
 
 @app.errorhandler(400)
@@ -88,6 +76,8 @@ def bad_request(error):
 
 @app.route("/")
 def index():
+    if session["mac"] == "local" and not (app.testing or app.debug):
+        return redirect("admin")
     return render_template(
         "students.html", registered=(session["device"].student is not None)
     )
@@ -136,8 +126,8 @@ def whoami():
 @app.route("/api/v1/attendance")
 def attendance():
     if g.meeting is not None:
-        if (device := session.get("device")) is not None:
-            student = device.student
+        device = session.get("device")
+        if (student := device.student) is not None:  # type: ignore
             query = (
                 g.meeting.attendances.select()
                 .join(Student, on=Attendance.student == Student.id)  # type: ignore
@@ -164,7 +154,7 @@ def attendance():
 
 @app.route("/admin")
 def admin():
-    if config.get("admin from localhost", True):
+    if app.config.get("admin from localhost", True):
         if request.remote_addr not in ["localhost", "127.0.0.1"]:
             return redirect("/")
     return render_template("admin.html", admin=session.get("admin", False))
