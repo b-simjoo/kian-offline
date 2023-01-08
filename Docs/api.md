@@ -32,7 +32,7 @@ Server will save student code and mac address in database.
 
 |property    |type    |description |
 |------------|--------|------------|
-|student_name|`string`|Student name|
+|name|`string`|Student name|
 
 #### Error responses
 > *content-type: `application/json`*
@@ -87,9 +87,10 @@ This endpoint register student's present and returns all data that is needed to 
 >
 > *content-type: `application/json`*
 
-|name   |type    |data type|description   |
-|-------|--------|---------|--------------|
-|std_num|required|`string` |student number|
+|property|type|description|
+|--------|----|-----------|
+|student |[`Student` object](#student-object)|Student info|
+|meetings  |[`Array[Meeting]`](#meeting-object)|Student number|
 
 #### Error responses
 > *content-type: `application/json`*
@@ -469,9 +470,11 @@ This endpoint will return a [`Meeting` object](#meeting-object) if there was a m
 |start_at|`string(Time)`|Time of starting the meeting. format: `HH:MM:SS.ssssss`|
 |end_at|`string(Time)`|Time of ending the meeting. format: `HH:MM:SS.ssssss`|
 |in_progress|`bool`|Meeting is in progress or not|
-|count_of_attendances|`int`|Count of attendances in this meeting|
-|attendances|`Array[Attendance]`|An array of all Attendances for this meeting|
-|scores|`Array[Score]`|An array of all scores that given to students in this meeting|
+|count_of_attendances<sup>*</sup>|`int`|Count of attendances in this meeting|
+|attendances<sup>*</sup>|`Array[Attendance]`|An array of all Attendances for this meeting|
+|scores<sup>*</sup>|`Array[Score]`|An array of all scores that given to students in this meeting|
+
+> <i>* this properties are just available for admin</i>
 ### `Attendance` object
 
 |property|type|description|
