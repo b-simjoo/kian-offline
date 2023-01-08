@@ -83,7 +83,7 @@ This endpoint register student's present and returns all data that is needed to 
 > None
 
 #### Successful responses
-> *HTTP status code: 200 / 203 (if user presence is already registered)*
+> *HTTP status code: 200*
 >
 > *content-type: `application/json`*
 
