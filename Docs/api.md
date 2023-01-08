@@ -112,7 +112,7 @@ only allow client from localhost for login. Also client may use this endpoint to
 > None
 
 #### Successful responses
-> *HTTP status code: 200 / 203 (if user presence is already registered)*
+> *HTTP status code: 200*
 >
 > *content-type: `application/json`*
 
