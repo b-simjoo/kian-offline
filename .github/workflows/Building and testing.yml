@@ -47,6 +47,7 @@ jobs:
       - name: commit `coverage-badge.json` file
         id: commit
         run: |
+          rm coverage.json
           git config --local user.email "action@github.com"
           git config --local user.name "github-actions"
           git add coverage-badge.json
