@@ -37,14 +37,19 @@ jobs:
             g = int(35 + p / 50 * 164 if p < 50 else 199 - (p - 50) / 50 * 33)
             b = int(40 - p / 50 * 28 if p < 50 else 12 + (p - 50) / 50 * 88)
             color_code = "#" + hex(r * 65536 + g * 256 + b).lstrip("0x").zfill(6)
-            c['totals']['badge_color'] = color_code
-            dump(c,open("coverage.json",'w'))
-      - name: commit `coverage.json` file
+            badge = {
+              "schemaVersion": 1,
+              "label": "coverage",
+              "message": c["totals"]["percent_covered_display"]+"%",
+              "color": color_code
+            }
+            dump(badge,open("coverage-badge.json",'w'))
+      - name: commit `coverage-badge.json` file
         id: commit
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "github-actions"
-          git add coverage.json
+          git add coverage-badge.json
           if [-z "$(git status --porcelain)"]; then
             echo "::set-output name=push::false"
           else
