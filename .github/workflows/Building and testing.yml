@@ -50,8 +50,8 @@ jobs:
           rm coverage.json
           git config --local user.email "action@github.com"
           git config --local user.name "github-actions"
-          git add coverage-badge.json
-          if [-z "$(git status --porcelain)"]; then
+          git add coverage-badge.json || true
+          if [ -z "$(git status --porcelain)" ]; then
             echo "::set-output name=push::false"
           else
             git commit -m "Changed coverage report" -a
