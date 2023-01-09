@@ -69,8 +69,7 @@ def _before_request():
 @app.errorhandler(400)
 def bad_request(error):
     if isinstance(error.description, ValidationError):
-        original_error = error.description
-        return jsonify({"info": original_error.message}), 400
+        return jsonify(), 400
     return error
 
 
@@ -163,7 +162,7 @@ def admin():
 @app.route("/api/v1/login", methods=["POST"])
 @expects_json(LOGIN_SCHEMA)
 def login():
-    if config.get("admin from localhost", True):
+    if app.config.get("local admin", True):
         if request.remote_addr not in ["localhost", "127.0.0.1"]:
             return redirect("/")
     if session.get("admin"):
@@ -172,7 +171,7 @@ def login():
         username = g.data["username"]
         password = g.data["password"]
         if username and password:
-            if (config["admin username"], config["admin password"]) == (
+            if (app.config["admin username"], app.config["admin password"]) == (
                 username,
                 password,
             ):
@@ -194,18 +193,18 @@ def login():
 
 @app.route("/api/v1/can_login")
 def can_login():
-    if config.get("admin from localhost", True):
+    if app.config.get("local admin", True):
         if request.remote_addr not in ["localhost", "127.0.0.1"]:
-            return jsonify(can_login=False, banned=session.get("banned", False)), 403
-    if session.get("banned", False):
-        return jsonify(can_login=True, banned=True), 403
-    return jsonify(can_login=True, banned=False)
+            abort(403)
+    if session.get("tries_left", 5) <= 0:
+        abort(403)
+    return jsonify()
 
 
 def login_required(func):
     @functools.wraps(func)
     def wrapper(*args, **kw):
-        if config.get("admin from localhost", True):
+        if app.config.get("local admin", True):
             if request.remote_addr not in ["localhost", "127.0.0.1"]:
                 return redirect("/")
         if session.get("admin"):

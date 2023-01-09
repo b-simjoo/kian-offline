@@ -203,7 +203,42 @@ def test_get_data_from_database(db):
             Device.get(Device.mac == device["mac"])
 
 
-class TestKianApp:
+class TestLogin:
+    @pytest.fixture(scope="class")
+    def test_client(self, mv_db, config):
+        import app
+
+        app.app.config.update({"TESTING": True})
+
+        with app.app.test_client() as test_client:
+            with app.app.app_context():
+                yield test_client
+
+    @pytest.mark.parametrize(
+        "username,password,tries_left,error_code",
+        [
+            ("admin", "admin", 4, 401),
+            ("admin", "admin", 3, 401),
+            ("admin", "admin", 2, 401),
+            ("admin", "admin", 1, 401),
+            ("admin", "admin", "banned", 403),
+            ("admin", "admin", "banned", 403),
+        ],
+    )
+    def test_login_ban(self, test_client, username, password, tries_left, error_code):
+        res = test_client.post(
+            "api/v1/login", json={"username": username, "password": password}
+        )
+        if tries_left != "banned":
+            assert res.json["tries_left"] == tries_left
+        assert res.status_code == error_code
+
+    def test_can_login(self, test_client):
+        res = test_client.get("/api/v1/can_login")
+        assert res.status_code == 403
+
+
+class TestAPI:
     @pytest.fixture(scope="class")
     def test_client(self, mv_db, config):
         import app
@@ -245,6 +280,12 @@ class TestKianApp:
         assert res.is_json
         assert res.json["tries_left"] == 3  # type: ignore
 
+        res = test_client.post(
+            "api/v1/login", json={"username": "kian pirfalak", "password": "admin"}
+        )
+        assert res.status_code == 200
+
+    def test_login_again(self, test_client):
         res = test_client.post(
             "api/v1/login", json={"username": "kian pirfalak", "password": "admin"}
         )
@@ -353,7 +394,7 @@ class TestKianApp:
                 current_meeting = meeting
                 break
         else:
-            assert True, "No in progress meeting found"
+            assert False, "No in progress meeting found"
 
         # ----Checking attendance for this meeting is registered----
         assert current_meeting["id"] in [
@@ -419,6 +460,12 @@ class TestKianApp:
 
         # ----'meeting' should be int here----
         assert all([isinstance(a["meeting"], int) for a in res_attendances])
+
+    def test_attendance_again(self, test_client: FlaskClient):
+        res = test_client.get("/api/v1/attendance")
+        assert res.status_code == 203
+        assert res.is_json
+        assert "student" in res.json and "meetings" in res.json
 
     def test_get_students(self, test_client: FlaskClient):
         res = test_client.get("api/v1/students")
