@@ -238,6 +238,15 @@ class TestLogin:
         assert res.status_code == 403
 
 
+@pytest.fixture(name="common_vars", scope="class")
+def sample_manager_fixture():
+    class CommonVars:
+        def __init__(self):
+            self.current_meeting = None
+
+    return CommonVars()
+
+
 class TestAPI:
     @pytest.fixture(scope="class")
     def test_client(self, mv_db, config):
@@ -291,9 +300,10 @@ class TestAPI:
         )
         assert res.status_code == 200
 
-    def test_create_meeting_after_login(self, test_client):
+    def test_create_meeting_after_login(self, test_client, common_vars):
         res = test_client.post("/api/v1/current_meeting")
         assert res.status_code == 200
+        common_vars.current_meeting = res.json
 
     def test_create_meeting_again(self, test_client):
         res = test_client.post("/api/v1/current_meeting")
@@ -520,3 +530,106 @@ class TestAPI:
                 for meeting in res.json
             ]
         )
+
+    def test_get_meeting(self, test_client: FlaskClient, common_vars):
+        res = test_client.get(f"api/v1/meetings/{common_vars.current_meeting['id']}")
+        assert res.status_code == 200
+        assert res.is_json
+        res_json = res.json  # assigning for log
+        assert all(
+            [
+                (p in res_json)
+                for p in (
+                    "id",
+                    "date",
+                    "start_at",
+                    "end_at",
+                    "in_progress",
+                    "attendances",
+                    "scores",
+                    "count_of_attendances",
+                )
+            ]
+        )
+        assert res_json["id"] == common_vars.current_meeting["id"]
+        common_vars.current_meeting = res_json
+
+    def test_get_current_meeting(self, test_client: FlaskClient, common_vars):
+        res = test_client.get("api/v1/current_meeting")
+        assert res.status_code == 200
+        assert res.is_json
+        res_json = res.json  # assigning for log
+        assert all(
+            [
+                (p in res_json)
+                for p in (
+                    "id",
+                    "date",
+                    "start_at",
+                    "end_at",
+                    "in_progress",
+                    "attendances",
+                    "scores",
+                    "count_of_attendances",
+                )
+            ]
+        )
+        assert all(
+            [
+                (common_vars.current_meeting[p] == res_json[p])
+                for p in (
+                    "id",
+                    "date",
+                    "start_at",
+                    "end_at",
+                    "in_progress",
+                    "attendances",
+                    "scores",
+                    "count_of_attendances",
+                )
+            ]
+        )
+
+    def test_end_current_meeting(self, test_client: FlaskClient, common_vars):
+        res = test_client.delete("/api/v1/current_meeting")
+        assert res.status_code == 200
+        assert res.is_json
+        res_json = res.json  # assigning for log
+        assert all(
+            [
+                (p in res_json)
+                for p in (
+                    "id",
+                    "date",
+                    "start_at",
+                    "end_at",
+                    "in_progress",
+                    "attendances",
+                    "scores",
+                    "count_of_attendances",
+                )
+            ]
+        )
+        common_vars.current_meeting["in_progress"] = False
+        assert all(
+            [
+                (common_vars.current_meeting[p] == res_json[p])
+                for p in (
+                    "id",
+                    "date",
+                    "start_at",
+                    "in_progress",
+                    "attendances",
+                    "scores",
+                    "count_of_attendances",
+                )
+            ]
+        )
+
+    def test_end_current_meeting_again(self, test_client: FlaskClient):
+        res = test_client.delete("/api/v1/current_meeting")
+        assert res.status_code == 404
+
+    def test_get_current_meeting_again(self, test_client: FlaskClient):
+        res = test_client.get("/api/v1/current_meeting")
+        assert res.status_code == 404

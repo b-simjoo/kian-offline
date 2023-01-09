@@ -306,7 +306,7 @@ def start_meeting():
     return jsonify(info="Unknown error while creating database record"), 500
 
 
-@app.route("/api/v1/current_meeting", methods=["DEL"])
+@app.route("/api/v1/current_meeting", methods=["DELETE"])
 @login_required
 def end_current_meeting():
     if g.meeting is not None and g.meeting.in_progress:
