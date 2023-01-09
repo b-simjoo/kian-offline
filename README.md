@@ -6,7 +6,7 @@ In the name of God of the rainbow
 [![](https://img.shields.io/github/v/release/bsimjoo-official/kian?include_prereleases&label=latest%20pre-release)](https://github.com/bsimjoo-official/kian/releases)
 ![GitHub Workflow Status (with branch)](https://img.shields.io/github/actions/workflow/status/bsimjoo-official/kian/Building%20and%20testing.yml?branch=main)
 [![Code Style: Black](https://img.shields.io/badge/code%20style-black-000000)](https://github.com/psf/black)
-![Coverage](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fbsimjoo-official%2Fkian%2Fmain%2Fcoverage-badge.json)
+[![Coverage](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fbsimjoo-official%2Fkian%2Fmain%2Fcoverage-badge.json)](https://github.com/bsimjoo-official/kian/actions/workflows/Building%20and%20testing.yml)
 
 Kian is an network-based program to help teachers, which was started with purpose of making attendance smart.
 
