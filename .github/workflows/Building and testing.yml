@@ -6,13 +6,11 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ["3.9", "3.10"]
+    python-version: "3.9"
 
     steps:
       - uses: actions/checkout@v3
-      - name: Set up Python ${{ matrix.python-version }}
+      - name: Set up Python ${{ python-version }}
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
@@ -24,4 +22,39 @@ jobs:
       - name: Lint with black
         run: black --check --verbose .
       - name: Test with pytest
-        run: coverage run --source='.' --module pytest -v tests -lxs ; coverage report -m
+        run: coverage run --source='.' --module pytest -v tests -lxs
+      - name: Create code coverage report
+        run: coverage report -m
+        run: coverage json
+      - name: Get color for badge
+        uses: jannekem/run-python-script-action@v1
+        with:
+          script: |
+            from json import dump,load
+            c = load(open("coverage.json"))
+            p = p = c["totals"]["percent_covered"]
+            r = int(255 if p < 50 else 255 - (p - 50) / 50 * 255)
+            g = int(35 + p / 50 * 164 if p < 50 else 199 - (p - 50) / 50 * 33)
+            b = int(40 - p / 50 * 28 if p < 50 else 12 + (p - 50) / 50 * 88)
+            color_code = "#" + hex(r * 65536 + g * 256 + b).lstrip("0x").zfill(6)
+            c['totals']['badge_color'] = color_code
+            dump(c,open("coverage.json",'w'))
+      - name: commit `coverage.json` file
+        id: commit
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "github-actions"
+          git add coverage.json
+          if [-z "$(git status --porcelain)"]; then
+            echo "::set-output name=push::false"
+          else
+            git commit -m "Changed coverage report" -a
+            echo "::set-output name=push::true"
+          fi
+        shell: bash
+      - name: Push changes
+        if: steps.commit.outputs.push == 'true'
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
