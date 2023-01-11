@@ -1,28 +1,28 @@
 var meetingInProgress = false;
 function login(e) {
     e.preventDefault();
-    request('login',undefined,'POST',
-        res=>{
+    request('login', undefined, 'POST',
+        res => {
             show_msg('success', 'Welcome to admin panel');
             loadView('admin-panel');
-            request('current_meeting',undefined,undefined,res=>{
+            request('current_meeting', undefined, undefined, res => {
                 let startBtn = document.getElementById('start-meeting-btn');
                 startBtn.innerHTML = '<i class="fa-solid fa-stop"></i> End meeting';
                 startBtn.classList.add('stop');
-                startBtn.onclick=endMeeting;
+                startBtn.onclick = endMeeting;
                 meetingInProgress = true;
             },
-            {
-                404:()=>{}
-            });
+                {
+                    404: () => { }
+                });
             renderTable();
-        },{
-            401:()=>{show_msg('error', 'Access denied, ' + req.response.tries_left + ' try left.');},
-            403:()=>{show_msg('error', 'You are banned, You can not login anymore');}
-        },{
-            username:e.currentTarget.username.value,
-            password:e.currentTarget.password.value
-        }
+        }, {
+        401: () => { show_msg('error', 'Access denied, ' + req.response.tries_left + ' try left.'); },
+        403: () => { show_msg('error', 'You are banned, You can not login anymore'); }
+    }, {
+        username: e.currentTarget.username.value,
+        password: e.currentTarget.password.value
+    }
     )
     return false;
 }
@@ -30,9 +30,9 @@ function login(e) {
 var Meetings, Students;
 function renderTable() {
     let studentsTable = document.getElementById('students-table');
-    if (studentsTable){
-        animate(studentsTable,'fade','out').then(()=>{
-            document.getElementById('students-info').innerHTML='<h1 class="spinner middle center inline"></h1>';
+    if (studentsTable) {
+        animate(studentsTable, 'fade', 'out').then(() => {
+            document.getElementById('students-info').innerHTML = '<h1 class="spinner middle center inline"></h1>';
         })
     }
     request('meetings', undefined, undefined, (meetings) => {
@@ -41,11 +41,11 @@ function renderTable() {
             if (students.length > 0) {
                 Students = students;
                 const studentsTable = createTable(meetings, students);
-                document.getElementById('students-info').replaceChildren(div({id:"table-container", cls: ['block', 'center']},studentsTable));
+                document.getElementById('students-info').replaceChildren(div({ id: "table-container", cls: ['block', 'center'] }, studentsTable));
             } else {
                 document.getElementById('students-info').replaceChildren(div({ cls: ['middle', 'center', 'block'] },
-                    p(undefined,'Your class is empty!'),
-                    small(undefined, 'to add students shutdown server, go to app root and<br>run <code>python worksheetUtil.py load &lt;yourfile&gt;</code> and<br>then restart the server, <a href="https://github.com/bsimjoo-official/kian">more info</a>')      // TODO: add document for this
+                    p(undefined, 'Your class is empty!'),
+                    small(undefined, 'to add students shutdown server, go to app root and<br>run <code>python studmgr.py load &lt;yourfile&gt;</code> and<br>then restart the server, <a href="https://github.com/bsimjoo-official/kian">more info</a>')      // TODO: add document for this
                 ));
             }
         })
@@ -53,8 +53,8 @@ function renderTable() {
 }
 
 function createTable(meetings, students) {
-    let rowCounter=1;
-    return table({id:'students-table',cls:'students-table'},
+    let rowCounter = 1;
+    return table({ id: 'students-table', cls: 'students-table' },
         thead(undefined,
             tr(undefined,
                 td(undefined, 'No.'),
@@ -64,7 +64,7 @@ function createTable(meetings, students) {
                         let meetingTime;
                         if (!meeting.in_progress) {
                             let start_at = meeting.start_at.split(':').slice(0, 2).join(':');
-                            let end_at = meeting.end_at!==null? meeting.end_at.split(':').slice(0, 2).join(':'):'N/A';
+                            let end_at = meeting.end_at !== null ? meeting.end_at.split(':').slice(0, 2).join(':') : 'N/A';
                             meetingTime = small({ cls: 'meeting-time' }, start_at, '-', end_at);
                         } else
                             meetingTime = small({ cls: 'in-process' }, 'in-process');
@@ -100,7 +100,7 @@ function createTable(meetings, students) {
                     p(undefined, span({ cls: 'secondary-text' }, 'Count of devices: '), textNode(student.devices.length))
                 ]))
                 return tr({ id: 'std-' + student.id, cls: 'student' },
-                    td(undefined,(rowCounter++).toString()),
+                    td(undefined, (rowCounter++).toString()),
                     student_td,
                     ...(meetings.length > 0 ? meetings.map(meeting => {
                         let attendance = student.attendances.find(a => a.meeting === meeting.id);
@@ -127,9 +127,9 @@ function createTable(meetings, students) {
                                 p(undefined, span({ cls: 'secondary-text' }, 'Full-score: '), score.full_score),
                                 p(undefined, span({ cls: 'secondary-text' }, 'Reason: '), score.reason || "")
                             ]);
-                        } else 
-                            score = {id:null,score:0,full_score:0,reason:""}
-                        score_td.onclick = e=>{
+                        } else
+                            score = { id: null, score: 0, full_score: 0, reason: "" }
+                        score_td.onclick = e => {
                             let dialog = document.getElementById('score-dlg');
                             dialog.dataset.scoreId = score.id;
                             dialog.dataset.meetingId = meeting.id;
@@ -152,67 +152,67 @@ function createTable(meetings, students) {
     )
 }
 
-function endMeeting(){
-    request('current_meeting',undefined,'DEL',()=>{
-        show_msg('success','Meeting ended');
+function endMeeting() {
+    request('current_meeting', undefined, 'DEL', () => {
+        show_msg('success', 'Meeting ended');
         let startBtn = document.getElementById('start-meeting-btn');
         startBtn.innerHTML = '<i class="fa-solid fa-play"></i> Start meeting';
         startBtn.classList.remove('stop')
-        startBtn.onclick=startMeeting;
+        startBtn.onclick = startMeeting;
         renderTable();
         meetingInProgress = false;
     },
-    {
-        404:()=>{
-            show_msg('warning','There is no meeting in progress')
-            let startBtn = document.getElementById('start-meeting-btn');
-            startBtn.innerHTML = '<i class="fa-solid fa-play"></i> Start meeting';
-            startBtn.classList.remove('stop')
-            startBtn.onclick=startMeeting;
-            renderTable();
-            meetingInProgress = false;
-        }
-    })
+        {
+            404: () => {
+                show_msg('warning', 'There is no meeting in progress')
+                let startBtn = document.getElementById('start-meeting-btn');
+                startBtn.innerHTML = '<i class="fa-solid fa-play"></i> Start meeting';
+                startBtn.classList.remove('stop')
+                startBtn.onclick = startMeeting;
+                renderTable();
+                meetingInProgress = false;
+            }
+        })
 }
 
-function startMeeting(){
-    request('current_meeting',undefined,'POST',()=>{
-        show_msg('success','Meeting started')
+function startMeeting() {
+    request('current_meeting', undefined, 'POST', () => {
+        show_msg('success', 'Meeting started')
         let startBtn = document.getElementById('start-meeting-btn');
         startBtn.innerHTML = '<i class="fa-solid fa-stop"></i> End meeting';
         startBtn.classList.add('stop');
-        startBtn.onclick=endMeeting;
+        startBtn.onclick = endMeeting;
         renderTable();
         meetingInProgress = true;
     },
-    {
-        202:()=>{show_msg('error','A meeting is already on going.')},
-        500:()=>{show_msg('error','Unknown server error')}
-    })
+        {
+            202: () => { show_msg('error', 'A meeting is already on going.') },
+            500: () => { show_msg('error', 'Unknown server error') }
+        })
 }
 
-function chooseRandom(){
-    if (document.getElementsByClassName('randomly-chosen').length==1)
+function chooseRandom() {
+    if (document.getElementsByClassName('randomly-chosen').length == 1)
         document.getElementsByClassName('randomly-chosen')[0].classList.remove('randomly-chosen');
     let students = document.getElementById('students-table').getElementsByTagName('tbody')[0].children;
-    let rnd = getRndInteger(0,students.length-1);
+    let rnd = getRndInteger(0, students.length - 1);
     students[rnd].classList.add('randomly-chosen');
-    students[rnd].scrollIntoView({behavior: "smooth", block: "center", inline: "nearest"});
-    show_msg('info',`chosen student number ${rnd+1} -> ${Students[rnd].name}`)
+    students[rnd].scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
+    show_msg('info', `chosen student number ${rnd + 1} -> ${Students[rnd].name}`)
 }
 
-function addScore(e){
+function addScore(e) {
     e.preventDefault();
     let form = e.currentTarget;
     let score = parseFloat(form.score.value) || parseInt(form.score.value);
-    if(form.score.dataset.error==='true'||isNaN(score)){
+    if (form.score.dataset.error === 'true' || isNaN(score)) {
         console.log('Score is not right');
         shake(form.score);
         return false
     }
     let fullScore = form.fullScore.value || 0;
     fullScore = parseFloat(fullScore) || parseInt(fullScore);
-    if(form.fullScore.dataset.error==='true' || isNaN(fullScore)){
+    if (form.fullScore.dataset.error === 'true' || isNaN(fullScore)) {
         console.log('full score is not right');
         shake(form.fullScore);
         return false
@@ -221,23 +221,23 @@ function addScore(e){
     let scoreId = parseInt(form.dataset.scoreId) || null;
     let meetingId = parseInt(form.dataset.meetingId) || null;
     let studentId = parseInt(form.dataset.studentId);
-    if(isNaN(studentId))
+    if (isNaN(studentId))
         return false;
-    request('score',undefined,'POST',()=>{
+    request('score', undefined, 'POST', () => {
         hide_dialog('score-dlg')
-        show_msg('success','New score added');
+        show_msg('success', 'New score added');
         renderTable();
-    },{
-        400:(res)=>{console.error(res)},
-        404:(res)=>{show_msg('error','Info not found')},
-        500:(res)=>{show_msg('error','unknown error when saving data to database')}
-    },{
-        id:scoreId,
-        student:studentId,
-        meeting:meetingId,
-        score:score,
-        full_score:fullScore,
-        reason:reason
+    }, {
+        400: (res) => { console.error(res) },
+        404: (res) => { show_msg('error', 'Info not found') },
+        500: (res) => { show_msg('error', 'unknown error when saving data to database') }
+    }, {
+        id: scoreId,
+        student: studentId,
+        meeting: meetingId,
+        score: score,
+        full_score: fullScore,
+        reason: reason
     })
     return false;
 }
@@ -251,16 +251,16 @@ window.onbeforeunload = function (e) {
 window.onload = document.onload = (e) => {
     if (typeof (admin) !== 'undefined' && admin && curtainView !== 'admin-panel') {
         loadView('admin-panel');
-        request('current_meeting',undefined,undefined,res=>{
+        request('current_meeting', undefined, undefined, res => {
             let startBtn = document.getElementById('start-meeting-btn');
             startBtn.innerHTML = '<i class="fa-solid fa-stop"></i> End meeting';
             startBtn.classList.add('stop');
-            startBtn.onclick=endMeeting;
+            startBtn.onclick = endMeeting;
             meetingInProgress = true;
         },
-        {
-            404:()=>{/*pass*/}
-        });
+            {
+                404: () => {/*pass*/ }
+            });
         renderTable();
     } else {
         loadView('login');
