@@ -8,7 +8,7 @@ In the name of God of the rainbow
 [![Code Style: Black](https://img.shields.io/badge/code%20style-black-000000)](https://github.com/psf/black)
 [![Coverage](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fbsimjoo-official%2Fkian%2Fmain%2Fcoverage-badge.json)](https://github.com/bsimjoo-official/kian/actions/workflows/Building%20and%20testing.yml)
 
-Kian is an network-based program to help teachers, which was started with purpose of making attendance smart.
+Kian is an network-based program to help me and other teachers, with the aim of making students' attendance process smarter and faster.
 
 This app will use an **Access-point** ([why?](#why-does-this-app-uses-an-access-point)) and Flask as HTTP backend.
 Students should connect to the access point and enter server IP address in the browser, then for the first time they must submit their student number, application will save their MAC address and the student code for future.
@@ -18,6 +18,11 @@ https://user-images.githubusercontent.com/117530839/206903458-cf13800f-15a6-43e0
 *A demo of logging-in as BSimjoo*
 
 </div>
+
+## Why am I developing this software?
+ - I'm Theacher assistant of Basics of programing lession in Hormozgan university and I have lots of student in my class. So I needed this software
+ - I wanted to create some softwares using flask and learning it.
+ - I think I have something to say in front-end developing, in this project I tried to show my skils!
 
 ## Features
 The Kian project has just started and has a good potential for development. Currently, the available features are as follows
@@ -30,7 +35,7 @@ The Kian project has just started and has a good potential for development. Curr
  - Prevent unauthorized registration of attendance for several students from one device ([Read more](#why-does-this-app-uses-an-access-point))
 
 ## Quick setup
-### Clone repository and install requirements
+### :inbox_tray: Clone repository and install requirements
 The `main` branch always contain latest version.
 ```batch
 git clone https://github.com/bsimjoo-official/kian.git
@@ -41,7 +46,7 @@ pip install -r requirements.txt
 pip install --user -r requirements
 ```
 
-### Opening hotspot on Windows
+### :signal_strength: Opening hotspot on Windows
 This app designed to use hotspot as a local network hosted by your system. This is needed to get devices mac address [read more](#why-does-this-app-uses-an-access-point).
 
 First you should know that your wireless card supports hotspot or not.
@@ -61,7 +66,21 @@ To stop hosted network use
 netsh wlan stop hostednetwork
 ```
 
-### Running application
+### :school: Adding students
+To add students there is a command interface `studutil.py` for importing an `excel` worksheet or manually add a student. I agree that this part of the software still needs works, but this project has been started for some time and this part will definitely improve in the future.
+
+#### Loading an `.xlsx` file:
+```
+python studutil.py -l "[FILE PATH]"
+```
+Then software ask a range for student names and another for student numbers. these are columns (A,B,...) and rows (1,2,...) of worksheet. you can use excel to find range like `A2:A56` and `B2:B56`
+
+#### Manual add student:
+```
+python studutil.py -a "[STUDENT NAME]" "[STUDENT NUMBER]"
+```
+
+### :running: Running application
 Flask developers recommends ([here](https://flask.palletsprojects.com/en/2.2.x/quickstart/)) to do not use integrated server for production and it is just for development, they recommended to use WSGI, nginx, Apache or ... . but this app is designed for a class of students not for word-wide-web! and for simplicity I use flask server:
 ```batch
 flask run --host=0.0.0.0 --port 80 --no-debugger
