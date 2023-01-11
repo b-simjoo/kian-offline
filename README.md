@@ -20,15 +20,15 @@ https://user-images.githubusercontent.com/117530839/206903458-cf13800f-15a6-43e0
 </div>
 
 ## Why am I developing this software?
- - I'm Theacher assistant of Basics of programing lession in Hormozgan university and I have lots of student in my class. So I needed this software
- - I wanted to create some softwares using flask and learning it.
- - I think I have something to say in front-end developing, in this project I tried to show my skils!
+ - I'm a Teacher Assistant of Fundamental Programming course in Hormozgan University(Bandar Abbas, Hormozgan, Iran) and I have so many students in the class. So I needed such a software.
+ - I wanted to create a software using Flask to learn it.
+ - I believe I have something to say in Front-end development. In this project I tried to show my skills!
 
 ## Features
 The Kian project has just started and has a good potential for development. Currently, the available features are as follows
  - Suitable for classes with a large number of students.
  - Simple and modern user interface.
- - Easy to use and set up
+ - Easy to use and set-up
  - Support for mobile phones
  - Ability to grade and announce grades
  - Registration of attendance history and the history of the device used
