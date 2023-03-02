@@ -99,6 +99,6 @@ As far as I know other ways like using cookies or browser storage are much more 
 
 ## License
 
-This software is under GNU General Public License version 3 or (at your option) any later version. See LICENSE.
+This software is under GNU General Public License version 3 or (at your option) any later version. See LICENSE
 
 ##### *Thanks to [@farooqkz](https://github.com/farooqkz) for reading and editing documents*
