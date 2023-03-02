@@ -20,15 +20,15 @@ https://user-images.githubusercontent.com/117530839/206903458-cf13800f-15a6-43e0
 </div>
 
 ## Why am I developing this software?
- - I'm Theacher assistant of Basics of programing lession in Hormozgan university and I have lots of student in my class. So I needed this software
- - I wanted to create some softwares using flask and learning it.
- - I think I have something to say in front-end developing, in this project I tried to show my skils!
+ - I'm a Teacher Assistant of Fundamental Programming course in Hormozgan University(Bandar Abbas, Hormozgan, Iran) and I have so many students in the class. So I needed such a software.
+ - I wanted to create a software using Flask to learn it.
+ - I believe I have something to say in Front-end development. In this project I tried to show my skills!
 
 ## Features
 The Kian project has just started and has a good potential for development. Currently, the available features are as follows
  - Suitable for classes with a large number of students.
  - Simple and modern user interface.
- - Easy to use and set up
+ - Easy to use and set-up
  - Support for mobile phones
  - Ability to grade and announce grades
  - Registration of attendance history and the history of the device used
@@ -81,14 +81,14 @@ python studutil.py -a "[STUDENT NAME]" "[STUDENT NUMBER]"
 ```
 
 ### :running: Running application
-Flask developers recommends ([here](https://flask.palletsprojects.com/en/2.2.x/quickstart/)) to do not use integrated server for production and it is just for development, they recommended to use WSGI, nginx, Apache or ... . but this app is designed for a class of students not for word-wide-web! and for simplicity I use flask server:
+Flask developers recommend ([here](https://flask.palletsprojects.com/en/2.2.x/quickstart/)) to not use integrated server for production and it is just for development, they recommended to use WSGI, nginx, Apache, etc. But this app is designed for a class of students not for the word-wide-web! And for the sake of simplicity I just use the integrated/builtin Flask server:
 ```batch
 flask run --host=0.0.0.0 --port 80 --no-debugger
 ```
 
 ## Who or What is Kian?
 
-While I am developing this software, protests continue in Iran and innocent people and children are being injured or murdered by the regime. The name Kian was chosen to commemorate the memory of Kian Pirfalak, the 9 years old child who was killed in Iran's protests by the regime forces.
+While I am developing this software, protests in Iran continue and innocent people some of whom are children under 18 are being injured or murdered by the regime. The name Kian was chosen to commemorate the memory of Kian Pirfalak, the 9 years old child who was killed in Iran's 2022/1401(also known as Mahsa Amini protests by some) protests by the regime forces.
 
 
 ## Why does this app uses an Access-point?
