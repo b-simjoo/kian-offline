@@ -314,7 +314,6 @@ class TestAPI:
         assert res.status_code == 403
 
     def test_register(self, test_client):
-
         # student not found
         res = test_client.get("/api/v1/register?std_num=546789123")
         assert res.status_code == 404
