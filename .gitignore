@@ -134,5 +134,3 @@ dmypy.json
 flask_session/
 *.sqlite
 .meeting
-# My test and coverage script!
-test-coverage.bat
